@@ -15,9 +15,9 @@ export const POST: APIRoute = async ({ request }) => {
         return new Response("", { status: 400 });
     }
 
-    if (image_url?.includes("webp")) {
-        return new Response("WEBP not supported", { status: 500 });
-    }
+    // if (image_url?.includes("webp")) {
+    //     return new Response("WEBP not supported", { status: 500 });
+    // }
 
     const encodedMessage = encoder
         .bold()
@@ -37,5 +37,3 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response("", { status: 200 });
 };
-
-export const prerender = false;

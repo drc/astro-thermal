@@ -27,5 +27,3 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response("", { status: 200 });
 };
-
-export const prerender = false;
