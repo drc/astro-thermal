@@ -9,6 +9,12 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^9.0.0",
+    "@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
     "astro": "^5.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.3",
+    "prettier": "^3.4.2"
   }
 }
