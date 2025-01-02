@@ -6,8 +6,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "start": "node dist/server/entry.mjs"
   },
+  "packageManager": "pnpm@9.15.2",
   "dependencies": {
     "@astrojs/node": "^9.0.0",
     "@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
