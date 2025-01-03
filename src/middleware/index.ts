@@ -20,7 +20,6 @@ export const onRequest = defineMiddleware((context, next) => {
 
     rateLimit.set(ip, userLimit);
 
-    console.log(rateLimit);
     if (userLimit.count > limit) {
         return new Response(JSON.stringify({ error: "Too many requests" }), {
             status: 429,
