@@ -10,7 +10,8 @@ export async function printImage(image_url: string) {
     const response = await fetch(image_url);
     const arrayBuffer = await response.arrayBuffer();
     let buffer = Buffer.from(arrayBuffer);
-    if (image_url.includes("webp")) {
+    // if it's not a jpeg, lets convert to help the printer, untested with other formats
+    if (!image_url.includes(".jpeg") && !image_url.includes(".jpg")) {
         buffer = await sharp(arrayBuffer).jpeg().toBuffer();
     }
     const image = await loadImage(buffer);
