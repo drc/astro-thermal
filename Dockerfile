@@ -23,4 +23,7 @@ ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
 
+LABEL org.opencontainers.image.source=https://github.com/drc/astro-thermal
+LABEL org.opencontainers.image.description="Astro API to interface with a Rongata receipt printer"
+
 CMD ["pnpm", "start"]
