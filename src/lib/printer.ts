@@ -1,13 +1,13 @@
 import net from "node:net";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 
-const PORT = 9100;
-const HOST = "10.0.1.128";
+const PORT: number = 9100;
+const HOST: string = "10.0.1.128";
 
-const printerClientSingleton = () => {
+const printerClientSingleton = (): net.Socket => {
     console.log("Creating new socket...");
     return new net.Socket();
-}
+};
 
 export const client: net.Socket = globalThis.printerClientGlobal ?? printerClientSingleton();
 globalThis.printerClientGlobal = client;
@@ -17,40 +17,39 @@ if (!globalThis.printerConnected) {
     client.connect(PORT, HOST, () => {
         globalThis.printerConnected = true;
         console.log("[🧾 THERMAL] Connected to printer");
-    })
+    });
 }
 
-client.on('data', (data) => {
-    console.log('[🧾 THERMAL] Received:', data.toString('hex'));
+client.on("data", (data): void => {
+    console.log("[🧾 THERMAL] Received:", data.toString("hex"));
 });
 
-client.on('error', (err) => {
-    console.error('[🧾 THERMAL] Error connecting to printer:', err);
+client.on("error", (err): void => {
+    console.error("[🧾 THERMAL] Error connecting to printer:", err);
 });
 
-client.on('close', () => {
-    console.log('[🧾 THERMAL] Disconnected from printer');
+client.on("close", (): void => {
+    console.log("[🧾 THERMAL] Disconnected from printer");
 });
 
-const socketEvents = ['close',
-    'connectionAttempt',
-    'connectionAttemptFailed',
-    'connectionAttemptTimeout',
-    'drain',
-    'end',
-    'lookup',
-    'connect',
-    'ready',
-    'timeout'];
+const socketEvents: string[] = [
+    "close",
+    "connectionAttempt",
+    "connectionAttemptFailed",
+    "connectionAttemptTimeout",
+    "drain",
+    "end",
+    "lookup",
+    "connect",
+    "ready",
+    "timeout",
+];
 
-socketEvents.forEach((event) => {
-    client.on(event, (_data) => {
-        console.log('[🧾 THERMAL] Event:', event);
+socketEvents.forEach((event): void => {
+    client.on(event, (_data): void => {
+        console.log("[🧾 THERMAL] Event:", event);
     });
 });
-
-console.log(ReceiptPrinterEncoder.printerModels)
-
 
 declare const globalThis: {
     printerClientGlobal: ReturnType<typeof printerClientSingleton>;
@@ -58,5 +57,5 @@ declare const globalThis: {
 } & typeof global;
 
 export const encoder: ReceiptPrinterEncoder = new ReceiptPrinterEncoder({
-    feedBeforeCut: 10
+    feedBeforeCut: 10,
 });

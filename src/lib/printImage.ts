@@ -9,11 +9,8 @@ const encoder = new ReceiptPrinterEncoder({ createCanvas, imageMode: "raster", f
 export async function printImage(image_url: string) {
     const response = await fetch(image_url);
     const arrayBuffer = await response.arrayBuffer();
-    let buffer = Buffer.from(arrayBuffer);
-    // if it's not a jpeg, lets convert to help the printer, untested with other formats
-    if (!image_url.includes(".jpeg") && !image_url.includes(".jpg")) {
-        buffer = await sharp(arrayBuffer).jpeg().toBuffer();
-    }
+    // convert all passed in images to jpegs
+    let buffer = await sharp(arrayBuffer).jpeg().toBuffer();
     const image = await loadImage(buffer);
     const aspectRatio = image.width / image.height;
     const width = 520;
