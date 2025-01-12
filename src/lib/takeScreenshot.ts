@@ -21,8 +21,8 @@ export async function takeScreenshot(url: string) {
     const width = image.width;
     const height = Math.floor(width / aspectRatio / 8) * 8;
 
-    let result = encoder.align("center").image(image, width, height, "threshold").cut().encode();
-    console.log(`Wrtiting to printer...`);
+    let result = encoder.align("center").image(image, width, height, "floydsteinberg").cut().encode();
+    console.log(`Writing to printer...`);
     client.write(result);
     return;
 }

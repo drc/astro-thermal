@@ -1,0 +1,80 @@
+---
+
+---
+
+<div>
+    <video plays-inline muted autoplay class="rounded-xl"></video>
+    <canvas class="hidden"></canvas>
+    <div>
+        <button data-start>start webcam</button>
+        <button data-take-photo>take photo</button>
+    </div>
+</div>
+
+<script>
+    async function useWebcam() {
+        const video = document.createElement("video");
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+        video.srcObject = stream;
+        video.play();
+        return { video, canvas, ctx };
+    }
+    const startButton: HTMLButtonElement | null = document.querySelector("[data-start]");
+    startButton?.addEventListener("click", () => {
+        startWebcam();
+    });
+
+    const takePhoto: HTMLButtonElement | null = document.querySelector("[data-take-photo]");
+    takePhoto?.addEventListener("click", () => {
+        captureImage();
+    });
+
+    const videoRef: HTMLVideoElement | null = document.querySelector("video");
+    const canvasRef: HTMLCanvasElement | null = document.querySelector("canvas");
+
+    async function startWebcam() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef) {
+            videoRef.srcObject = stream;
+        }
+    }
+
+    async function captureImage() {
+        if (videoRef && canvasRef) {
+            const video = videoRef;
+            const canvas = canvasRef;
+            const context = canvas.getContext("2d");
+            const aspectRatio = video.videoWidth / video.videoHeight;
+            const width = 400;
+            const height = Math.floor(width / aspectRatio / 8) * 8;
+            canvas.width = width;
+            canvas.height = height;
+            context?.drawImage(video, 0, 0, width, height);
+
+            const imageData = context?.getImageData(0, 0, width, height);
+            for (let i = 0; i < imageData?.data.length; i += 4) {
+                const brightness = imageData.data[i] + imageData?.data[i + 1] + imageData[i + 2] / 2;
+                imageData[i] = brightness;
+                imageData[i + 1] = brightness;
+                imageData[i + 2] = brightness;
+            }
+            context?.putImageData(imageData, 0, 0);
+
+            const imageDataUrl = canvas.toDataURL("image/png");
+            // console.log(imageDataUrl);
+            await fetch("/api/card", {
+                method: "POST",
+                body: JSON.stringify({
+                    "message": "pls subscribe",
+                    "image_url": imageDataUrl,
+                    "user": "Photobooth!"
+                })
+            })
+        }
+    }
+
+    startWebcam();
+</script>
