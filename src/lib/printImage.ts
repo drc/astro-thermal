@@ -1,4 +1,4 @@
-import { client } from "./printer.js";
+import { client } from "@/lib/printer";
 import { createCanvas, loadImage } from "canvas";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";

@@ -1,4 +1,5 @@
 import { client, encoder } from "@/lib/printer";
+import { takeScreenshot } from "@/lib/takeScreenshot";
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request }) => {
@@ -23,7 +24,9 @@ export const POST: APIRoute = async ({ request }) => {
         .line(list.map((item: string) => `[ ] ${item}`).join("\n"))
         .cut()
         .encode();
-    client.write(encodedMessage);
+    // client.write(encodedMessage);
+
+    takeScreenshot(`http://localhost:4321/groceries?list=${list.join(",")}`);
 
     return new Response("", { status: 200 });
 };
