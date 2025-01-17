@@ -16,7 +16,7 @@ export async function takeScreenshot(url: string) {
     await browser.close();
     const buffer = await sharp(ss).jpeg().toBuffer();
     const image = await loadImage(buffer);
-    console.log(image.naturalHeight, image.naturalWidth, image.width, image.height);
+    console.log(image.naturalWidth, image.naturalHeight, image.width, image.height);
     const aspectRatio = image.width / image.height;
     const width = image.width;
     const height = Math.floor(width / aspectRatio / 8) * 8;
