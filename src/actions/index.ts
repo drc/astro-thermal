@@ -14,7 +14,6 @@ export const server = {
             imageDataUrl: z.string(),
         }),
         handler: async (input, _context) => {
-            console.log("input", input);
             const image = await loadImage(input.imageDataUrl);
             const imagemessage = encoder
                 .align("center")
@@ -22,9 +21,7 @@ export const server = {
                 .rule({ width: 42 })
                 .cut()
                 .encode();
-            console.log("imagemessage", imagemessage);
             client.write(imagemessage);
-            // client.write(encoder.align("center").qrcode(input.imageDataUrl, { model: 1 }).cut().encode());
             return `Photo printed!`;
         },
     }),
