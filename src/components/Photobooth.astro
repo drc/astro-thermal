@@ -3,16 +3,59 @@ import Layout from "@/layouts/Layout.astro";
 ---
 
 <Layout>
-    <button>Take Photo</button>
+    <div>
+        <video plays-inline muted autoplay></video>
+        <canvas style="visibility: hidden;"></canvas>
+        <button>Take Photo</button>
+    </div>
 </Layout>
+
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+</style>
 
 <script>
     import { actions } from "astro:actions";
 
+    const videoRef = document.querySelector("video");
+
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    if (videoRef) {
+        videoRef.srcObject = stream;
+    }
+
     const button = document.querySelector("button");
     button?.addEventListener("click", async () => {
+        const canvasRef = document.querySelector("canvas") ?? document.createElement("canvas");
+        const context = canvasRef?.getContext("2d");
+        const aspectRatio = (videoRef?.videoWidth ?? 1) / (videoRef?.videoHeight ?? 1);
+        const width = videoRef?.videoWidth ?? 600;
+        const height = Math.floor((width / aspectRatio) * 8) / 8;
+        canvasRef.width = width;
+        canvasRef.height = height;
+
+        context?.drawImage(videoRef, 0, 0, width, height);
+
+        const imageData = context?.getImageData(0, 0, width, height);
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const brightness = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 2;
+            imageData.data[i] = brightness;
+            imageData.data[i + 1] = brightness;
+            imageData.data[i + 2] = brightness;
+        }
+        context.putImageData(imageData, 0, 0);
+
+        const imageDataUrl = canvasRef.toDataURL("image/png");
+        // const buffer = await new Promise((resolve) => canvasRef.toBlob(resolve));
+
+        // console.log(imageDataUrl);
         // Show alert pop-up with greeting from action
-        const { data, error } = await actions.printPhoto({ imageData: "Houston" });
+        const { data, error } = await actions.printPhoto({ imageDataUrl });
         if (!error) alert(data);
     });
 </script>
