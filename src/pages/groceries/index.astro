@@ -1,8 +1,11 @@
 ---
+import Layout from "@/layouts/Layout.astro";
 import MarlboroTheme from "@/components/MarlboroTheme.astro";
 
 const grocery_list = Astro.url.searchParams.get("list") || "Apples,Oranges,Bananas";
 const theme = Astro.url.searchParams.get("theme") || "Marlboro";
 ---
 
-{theme === "Marlboro" && <MarlboroTheme list={grocery_list} />}
+<Layout title="Grocery List">
+    {theme === "Marlboro" && <MarlboroTheme list={grocery_list} />}
+</Layout>

@@ -8,15 +8,15 @@ interface Props {
 const { list = "Apples,Oranges,Bananas" } = Astro.props;
 ---
 
-<div class="groceries">
+<div>
     <Crown />
-    <h1 class="heading">Groceries</h1>
+    <h1>Groceries</h1>
 
     <ul>
         {list.split(",").map((item: string) => <li>{item}</li>)}
     </ul>
 
-    <p class="footer">
+    <p>
         {list.split(",").length} class A Groceries
     </p>
 </div>
@@ -26,20 +26,7 @@ const { list = "Apples,Oranges,Bananas" } = Astro.props;
         font-family: "Marlboro";
         src: url("/fonts/Marlboro.ttf") format("truetype");
     }
-    ul {
-        list-style: square;
-    }
-    .heading {
-        margin: 0;
-        margin-top: -20px;
-        height: auto;
-        font-family: "Marlboro";
-        font-size: 11rem;
-        font-weight: 500;
-        letter-spacing: -0.2rem;
-        align-self: center;
-    }
-    .groceries {
+    div {
         box-sizing: border-box;
         font-family:
             system-ui,
@@ -61,7 +48,20 @@ const { list = "Apples,Oranges,Bananas" } = Astro.props;
         max-width: 560px;
         margin: 0 auto;
     }
-    .footer {
+    ul {
+        list-style: "▢ ";
+    }
+    h1 {
+        margin: 0;
+        margin-top: -20px;
+        height: auto;
+        font-family: "Marlboro";
+        font-size: 11rem;
+        font-weight: 500;
+        letter-spacing: -0.2rem;
+        align-self: center;
+    }
+    p {
         width: 100%;
         text-align: center;
         text-transform: uppercase;
