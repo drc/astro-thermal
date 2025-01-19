@@ -4,9 +4,9 @@ import Layout from "@/layouts/Layout.astro";
 
 <Layout>
     <div>
-        <video plays-inline muted autoplay></video>
-        <canvas style="visibility: hidden;"></canvas>
+        <video playsinline muted autoplay></video>
         <button>Take Photo</button>
+        <canvas style="visibility: hidden;"></canvas>
     </div>
 </Layout>
 
@@ -16,6 +16,9 @@ import Layout from "@/layouts/Layout.astro";
         flex-direction: column;
         max-width: 500px;
         margin: 0 auto;
+    }
+    button {
+        height: 1.5rem;
     }
 </style>
 
@@ -27,10 +30,12 @@ import Layout from "@/layouts/Layout.astro";
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     if (videoRef) {
         videoRef.srcObject = stream;
+        videoRef.play();
     }
 
     const button = document.querySelector("button");
-    button?.addEventListener("click", async () => {
+    button?.addEventListener("click", async (e) => {
+        e.currentTarget.textContent = "Processing...";
         const canvasRef = document.querySelector("canvas") ?? document.createElement("canvas");
         const context = canvasRef?.getContext("2d");
         const aspectRatio = (videoRef?.videoWidth ?? 1) / (videoRef?.videoHeight ?? 1);
@@ -52,10 +57,11 @@ import Layout from "@/layouts/Layout.astro";
 
         const imageDataUrl = canvasRef.toDataURL("image/png");
         // const buffer = await new Promise((resolve) => canvasRef.toBlob(resolve));
-
-        // console.log(imageDataUrl);
         // Show alert pop-up with greeting from action
         const { data, error } = await actions.printPhoto({ imageDataUrl });
-        if (!error) alert(data);
+        if (!error) {
+            // change button text back to normal
+            e.currentTarget.textContent = "Take Photo";
+        }
     });
 </script>
