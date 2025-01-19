@@ -3,6 +3,10 @@ import { defineMiddleware } from "astro:middleware";
 const rateLimit = new Map();
 
 export const onRequest = defineMiddleware((context, next) => {
+    console.log("path", context.url.pathname);
+    if (!context.url.pathname.includes("/api")) {
+        return next();
+    }
     const windowMs = 30 * 1000;
     const limit = 3;
     const { request } = context;
