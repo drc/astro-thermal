@@ -12,7 +12,7 @@ import Layout from "@/layouts/Layout.astro";
     const button = document.querySelector("button");
     button?.addEventListener("click", async () => {
         // Show alert pop-up with greeting from action
-        const { data, error } = await actions.printPhoto({ name: "Houston" });
+        const { data, error } = await actions.printPhoto({ imageData: "Houston" });
         if (!error) alert(data);
     });
 </script>
