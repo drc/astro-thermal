@@ -11,7 +11,7 @@ const encoder = new ReceiptPrinterEncoder({ createCanvas, imageMode: "raster", f
 export const server = {
     printPhoto: defineAction({
         input: z.object({
-            imageDataUrl: z.string(),
+            imageDataUrl: z.string().includes("data:image/png;base64,"),
         }),
         handler: async (input, _context) => {
             // use sharp to import base64 image

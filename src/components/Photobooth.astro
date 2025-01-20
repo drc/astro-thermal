@@ -1,25 +1,19 @@
 ---
-import Layout from "@/layouts/Layout.astro";
 import camera from "@/assets/camera.svg";
 import cameraRotate from "@/assets/camera-rotate.svg";
 ---
 
-<Layout>
-    <main>
-        <video playsinline muted autoplay></video>
-        <p style="display: none;">Photo Printed!</p>
-        <div>
-            <button id="switch"
-                ><img
-                    src={cameraRotate.src}
-                    alt="Glyph of a camera with arrows indicating to switch the camera"
-                /></button
-            >
-            <button id="snap"><img src={camera.src} alt="Glyph of a camera" /></button>
-        </div>
-        <canvas style="display: none;"></canvas>
-    </main>
-</Layout>
+<main>
+    <video playsinline muted autoplay></video>
+    <canvas style="display: none;"></canvas>
+    <p style="display: none;">Photo Printed!</p>
+    <div>
+        <button id="switch"
+            ><img src={cameraRotate.src} alt="Glyph of a camera with arrows indicating to switch the camera" /></button
+        >
+        <button id="snap"><img src={camera.src} alt="Glyph of a camera" /></button>
+    </div>
+</main>
 
 <style>
     main {
@@ -146,8 +140,12 @@ import cameraRotate from "@/assets/camera-rotate.svg";
             const successMessage = document.querySelector("p") as HTMLParagraphElement;
             successMessage.style.display = "block";
             cameraButton.disabled = true;
+            videoRef.style.display = "none";
+            canvasRef.style.display = "";
             setTimeout(() => {
                 successMessage.style.display = "none";
+                videoRef.style.display = "";
+                canvasRef.style.display = "none";
                 cameraButton.disabled = false;
             }, 3000);
         }
