@@ -14,7 +14,6 @@ export const server = {
             imageDataUrl: z.string().includes("data:image/png;base64,"),
         }),
         handler: async (input, _context) => {
-            // use sharp to import base64 image
             const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
             const sharpInstance = sharp(imageBuffer).sharpen({ sigma: 2 });
             sharpInstance.png().toFile("./photo.png");
