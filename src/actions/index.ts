@@ -14,7 +14,6 @@ export const server = {
             imageDataUrl: z.string().includes("data:image/png;base64,"),
         }),
         handler: async (input, _context) => {
-            // use sharp to import base64 image
             const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
             const sharpInstance = sharp(imageBuffer).sharpen({ sigma: 2 });
             sharpInstance.png().toFile("./photo.png");
@@ -24,7 +23,7 @@ export const server = {
             const width = image.width;
             const height = image.height;
             const imagemessage = encoder.align("center").image(image, width, height, "atkinson").cut().encode();
-            // client.write(imagemessage);
+            client.write(imagemessage);
             return `Photo printed!`;
         },
     }),
