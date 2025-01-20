@@ -1,67 +1,143 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import camera from "@/assets/camera.svg";
+import cameraRotate from "@/assets/camera-rotate.svg";
 ---
 
 <Layout>
-    <div>
+    <main>
         <video playsinline muted autoplay></video>
-        <button>Take Photo</button>
-        <canvas style="visibility: hidden;"></canvas>
-    </div>
+        <p style="display: none;">Photo Printed!</p>
+        <div>
+            <button id="switch"
+                ><img
+                    src={cameraRotate.src}
+                    alt="Glyph of a camera with arrows indicating to switch the camera"
+                /></button
+            >
+            <button id="snap"><img src={camera.src} alt="Glyph of a camera" /></button>
+        </div>
+        <canvas style="display: none;"></canvas>
+    </main>
 </Layout>
 
 <style>
-    div {
+    main {
+        height: 100vh;
+    }
+    main {
+        max-width: 500px;
         display: flex;
         flex-direction: column;
-        max-width: 500px;
+        gap: 30px;
         margin: 0 auto;
     }
+    div {
+        display: flex;
+        gap: 10px;
+        justify-content: space-around;
+        background-color: black;
+        padding: 20px;
+    }
     button {
-        height: 1.5rem;
+        img {
+            width: 45px;
+            height: 50px;
+        }
+        border: none;
+        width: 75px;
+        height: 75px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        background-color: red;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 50px;
+    }
+    #snap {
+        background-color: green;
+        color: black;
+    }
+    #snap:disabled {
+        background-color: grey;
+        img {
+            display: none;
+        }
+    }
+    p {
+        text-align: center;
+        font-size: 1.6rem;
+        color: green;
     }
 </style>
 
 <script>
     import { actions } from "astro:actions";
 
-    const videoRef = document.querySelector("video");
+    const videoRef = document.querySelector("video") as HTMLVideoElement;
 
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
     if (videoRef) {
+        if (stream.getVideoTracks()[0].getSettings().facingMode === "user") {
+            videoRef.style.transform = "rotateY(180deg)";
+        }
         videoRef.srcObject = stream;
         videoRef.play();
     }
 
-    const button = document.querySelector("button");
-    button?.addEventListener("click", async (e) => {
-        e.currentTarget.textContent = "Processing...";
-        const canvasRef = document.querySelector("canvas") ?? document.createElement("canvas");
-        const context = canvasRef?.getContext("2d");
-        const aspectRatio = (videoRef?.videoWidth ?? 1) / (videoRef?.videoHeight ?? 1);
-        const width = videoRef?.videoWidth ?? 600;
+    const switchButton = document.querySelector("button#switch") as HTMLButtonElement;
+    switchButton.addEventListener("click", async () => {
+        const facingMode = stream.getVideoTracks()[0].getSettings().facingMode;
+        const tracks = stream.getVideoTracks();
+        tracks[0].stop();
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: facingMode === "user" ? "environment" : "user" },
+        });
+        videoRef.srcObject = stream;
+        videoRef.play();
+        videoRef.style.transform = "";
+        if (facingMode !== "user") {
+            videoRef.style.transform = "rotateY(180deg)";
+        }
+    });
+
+    const cameraButton = document.querySelector("button#snap") as HTMLButtonElement;
+    cameraButton.addEventListener("click", async (e: MouseEvent) => {
+        const canvasRef = document.querySelector("canvas") as HTMLCanvasElement;
+        const context = canvasRef.getContext("2d") as CanvasRenderingContext2D;
+        const aspectRatio = (videoRef.videoWidth ?? 1) / (videoRef.videoHeight ?? 1);
+        const width = videoRef.videoWidth ?? 600;
         const height = Math.floor((width / aspectRatio) * 8) / 8;
         canvasRef.width = width;
         canvasRef.height = height;
 
-        context?.drawImage(videoRef, 0, 0, width, height);
+        context.drawImage(videoRef, 0, 0, width, height);
 
-        const imageData = context?.getImageData(0, 0, width, height);
+        const imageData = context.getImageData(0, 0, width, height) as ImageData;
+        console.log(imageData);
         for (let i = 0; i < imageData.data.length; i += 4) {
             const brightness = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 2;
             imageData.data[i] = brightness;
             imageData.data[i + 1] = brightness;
             imageData.data[i + 2] = brightness;
         }
+
         context.putImageData(imageData, 0, 0);
 
         const imageDataUrl = canvasRef.toDataURL("image/png");
-        // const buffer = await new Promise((resolve) => canvasRef.toBlob(resolve));
-        // Show alert pop-up with greeting from action
-        const { data, error } = await actions.printPhoto({ imageDataUrl });
+
+        const { data: _data, error } = await actions.printPhoto({ imageDataUrl });
         if (!error) {
-            // change button text back to normal
-            e.currentTarget.textContent = "Take Photo";
+            const successMessage = document.querySelector("p") as HTMLParagraphElement;
+            successMessage.style.display = "block";
+            cameraButton.disabled = true;
+            setTimeout(() => {
+                successMessage.style.display = "none";
+                cameraButton.disabled = false;
+            }, 3000);
         }
     });
 </script>
