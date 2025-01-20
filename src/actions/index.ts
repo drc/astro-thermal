@@ -24,7 +24,7 @@ export const server = {
             const width = image.width;
             const height = image.height;
             const imagemessage = encoder.align("center").image(image, width, height, "atkinson").cut().encode();
-            client.write(imagemessage);
+            // client.write(imagemessage);
             return `Photo printed!`;
         },
     }),
