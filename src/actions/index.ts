@@ -14,17 +14,27 @@ export const server = {
             imageDataUrl: z.string().includes("data:image/png;base64,"),
         }),
         handler: async (input, _context) => {
-            const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
-            const sharpInstance = sharp(imageBuffer).sharpen({ sigma: 2 });
-            sharpInstance.png().toFile("./photo.png");
-            const processedBuffer = await sharpInstance.toBuffer();
-            const processedBase64 = `data:image/png;base64,${processedBuffer.toString("base64")}`;
-            const image = await loadImage(processedBase64);
-            const width = image.width;
-            const height = image.height;
-            const imagemessage = encoder.align("center").image(image, width, height, "atkinson").cut().encode();
-            client.write(imagemessage);
-            return `Photo printed!`;
+            try {
+                const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
+                const sharpInstance = await sharp(imageBuffer)
+                    .metadata()
+                    .then(({ width = 0, height = 0 }) =>
+                        sharp(imageBuffer)
+                            .resize(Math.round(width * 0.9))
+                            .sharpen({ sigma: 2 })
+                    );
+                sharpInstance.png().toFile("./photo.png");
+                const processedBuffer = await sharpInstance.toBuffer();
+                const processedBase64 = `data:image/png;base64,${processedBuffer.toString("base64")}`;
+                const image = await loadImage(processedBase64);
+                const width = image.width;
+                const height = image.height;
+                const imagemessage = encoder.align("center").image(image, width, height, "atkinson").cut().encode();
+                client.write(imagemessage);
+                return `Photo printed!`;
+            } catch (e) {
+                console.error(e);
+            }
         },
     }),
 };

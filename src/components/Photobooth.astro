@@ -1,9 +1,13 @@
 ---
 import camera from "@/assets/camera.svg";
 import cameraRotate from "@/assets/camera-rotate.svg";
+import light from "@/assets/light.svg";
 ---
 
 <main>
+    <button id="torch">
+        <img src={light.src} alt="Glyph of a lightbulb" />
+    </button>
     <video playsinline muted autoplay></video>
     <canvas style="display: none;"></canvas>
     <p style="display: none;">Photo Printed!</p>
@@ -28,10 +32,14 @@ import cameraRotate from "@/assets/camera-rotate.svg";
     }
     div {
         display: flex;
+        flex-direction: column;
         gap: 10px;
         justify-content: space-around;
         background-color: black;
         padding: 20px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
     }
     button {
         img {
@@ -77,17 +85,34 @@ import cameraRotate from "@/assets/camera-rotate.svg";
         font-size: 1.6rem;
         color: green;
     }
+    button#torch {
+        background-color: transparent;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 30px;
+        height: 30px;
+    }
 </style>
 
 <script>
     import { actions } from "astro:actions";
 
+    const constraints = {
+        video: {
+            width: { min: 1024, ideal: 1280, max: 1920 },
+            height: { min: 576, ideal: 720, max: 1080 },
+            facingMode: { ideal: "environment" },
+        },
+    };
+
     const videoRef = document.querySelector("video") as HTMLVideoElement;
 
-    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    let stream = await navigator.mediaDevices.getUserMedia(constraints);
     if (videoRef) {
-        if (stream.getVideoTracks()[0].getSettings().facingMode === "user") {
-            videoRef.style.transform = "rotateY(180deg)";
+        const facingMode = stream.getVideoTracks()[0].getSettings().facingMode;
+        if (facingMode === "environment" || facingMode === undefined) {
+            // videoRef.style.transform = "rotateY(180deg)";
         }
         videoRef.srcObject = stream;
         videoRef.play();
@@ -100,13 +125,26 @@ import cameraRotate from "@/assets/camera-rotate.svg";
         tracks[0].stop();
 
         stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: facingMode === "user" ? "environment" : "user" },
+            video: { ...constraints.video, facingMode: facingMode === "user" ? "environment" : "user" },
         });
         videoRef.srcObject = stream;
         videoRef.play();
         videoRef.style.transform = "";
         if (facingMode !== "user") {
             videoRef.style.transform = "rotateY(180deg)";
+        }
+    });
+
+    const torchButton = document.querySelector("button#torch") as HTMLButtonElement;
+    torchButton.addEventListener("click", async () => {
+        const tracks = stream.getVideoTracks();
+        const track = tracks[0];
+        const capabilities = track.getCapabilities();
+        console.log(capabilities);
+        if ((capabilities as any).torch) {
+            const torchEnabled = (track.getConstraints() as any).advanced?.[0]?.torch ?? false;
+            console.log(torchEnabled);
+            await track.applyConstraints({ advanced: [{ torch: !torchEnabled }] } as any);
         }
     });
 
