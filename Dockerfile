@@ -4,6 +4,8 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+ENV COREPACK_INTEGRITY_KEYS=0
+
 COPY . /app
 WORKDIR /app
 
