@@ -21,7 +21,7 @@ export const server = {
                 const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
                 const sharpInstance = await sharp(imageBuffer)
                     .metadata()
-                    .then(({ width = 0, height = 0 }) =>
+                    .then(() =>
                         sharp(imageBuffer)
                             .sharpen({ sigma: 2 })
                     );

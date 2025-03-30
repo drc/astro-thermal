@@ -2,6 +2,8 @@
 import camera from "@/assets/camera.svg";
 import cameraRotate from "@/assets/camera-rotate.svg";
 import light from "@/assets/light.svg";
+const ip = Astro.request.headers.get("x-forwarded-for");
+const userAgent = Astro.request.headers.get("user-agent");
 ---
 
 <main>
@@ -10,20 +12,26 @@ import light from "@/assets/light.svg";
     </button>
     <video playsinline muted autoplay></video>
     <canvas style="display: none;"></canvas>
-    <p style="display: none;">Photo Printed!</p>
+    <input type="text" name="message" id="message" placeholder="Include a message" />
+    <input type="text" name="ip" id="ip" value={ip} style="display: none;" />
+    <input type="text" name="userAgent" id="userAgent" value={userAgent} style="display: none;" />
+    <p id="printed" style="display: none;">Photo Printed!</p>
     <div>
-        <button id="switch"
-            ><img src={cameraRotate.src} alt="Glyph of a camera with arrows indicating to switch the camera" /></button
-        >
+        <button id="switch">
+            <img src={cameraRotate.src} alt="Glyph of a camera with arrows indicating to switch the camera" />
+        </button>
         <button id="snap"><img src={camera.src} alt="Glyph of a camera" /></button>
     </div>
 </main>
 
 <style>
-    main {
-        height: 100vh;
+    #message {
+        margin: 0 10%;
+        font-size: 1.6rem;
+        /* padding: 5px; */
     }
     main {
+        height: 100vh;
         max-width: 500px;
         display: flex;
         flex-direction: column;
@@ -32,14 +40,11 @@ import light from "@/assets/light.svg";
     }
     div {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
         justify-content: space-around;
         background-color: black;
         padding: 20px;
-        position: absolute;
-        bottom: 0;
-        left: 0;
     }
     button {
         img {
@@ -68,7 +73,7 @@ import light from "@/assets/light.svg";
             display: none;
         }
     }
-    p {
+    p#printed {
         font-family:
             system-ui,
             -apple-system,
@@ -100,8 +105,8 @@ import light from "@/assets/light.svg";
 
     const constraints = {
         video: {
-            width: { min: 1024, ideal: 1280, max: 1920 },
-            height: { min: 576, ideal: 720, max: 1080 },
+            width: { min: 512, ideal: 512, max: 512 },
+            height: { min: 512, ideal: 512, max: 512 },
             facingMode: { ideal: "environment" },
         },
     };
@@ -111,8 +116,8 @@ import light from "@/assets/light.svg";
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
     if (videoRef) {
         const facingMode = stream.getVideoTracks()[0].getSettings().facingMode;
-        if (facingMode === "environment" || facingMode === undefined) {
-            // videoRef.style.transform = "rotateY(180deg)";
+        if (facingMode === undefined) {
+            videoRef.style.transform = "rotateY(180deg)";
         }
         videoRef.srcObject = stream;
         videoRef.play();
@@ -151,7 +156,11 @@ import light from "@/assets/light.svg";
     const cameraButton = document.querySelector("button#snap") as HTMLButtonElement;
     cameraButton.addEventListener("click", async (e: MouseEvent) => {
         const canvasRef = document.querySelector("canvas") as HTMLCanvasElement;
-        const context = canvasRef.getContext("2d") as CanvasRenderingContext2D;
+        const context = canvasRef.getContext("2d", {
+            willReadFrequently: true,
+            alpha: false,
+            desynchronized: true,
+        }) as CanvasRenderingContext2D;
         const aspectRatio = (videoRef.videoWidth ?? 1) / (videoRef.videoHeight ?? 1);
         const width = videoRef.videoWidth ?? 600;
         const height = Math.floor((width / aspectRatio) * 8) / 8;
@@ -170,12 +179,21 @@ import light from "@/assets/light.svg";
         }
 
         context.putImageData(imageData, 0, 0);
-
+        console.log();
         const imageDataUrl = canvasRef.toDataURL("image/png");
-
-        const { data: _data, error } = await actions.printPhoto({ imageDataUrl });
+        const messageInput = document.querySelector("input#message") as HTMLInputElement;
+        const ipInput = document.querySelector("input#ip") as HTMLInputElement;
+        const userAgentInput = document.querySelector("input#userAgent") as HTMLInputElement;
+        const { data: _data, error } = await actions.printPhoto({
+            imageDataUrl,
+            message: messageInput.value,
+            ip_address: ipInput.value,
+            user_agent: userAgentInput.value,
+        });
+        if (error) console.error(error);
         if (!error) {
-            const successMessage = document.querySelector("p") as HTMLParagraphElement;
+            messageInput.value = "";
+            const successMessage = document.querySelector("p#printed") as HTMLParagraphElement;
             successMessage.style.display = "block";
             cameraButton.disabled = true;
             videoRef.style.display = "none";
