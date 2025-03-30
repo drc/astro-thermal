@@ -5,6 +5,8 @@ import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
 
+const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
+
 // @ts-ignore
 const encoder = new ReceiptPrinterEncoder({ createCanvas, imageMode: "raster", feedBeforeCut: 8 });
 
@@ -21,24 +23,23 @@ export const server = {
                 const imageBuffer = Buffer.from(input.imageDataUrl.split(",")[1], "base64");
                 const sharpInstance = await sharp(imageBuffer)
                     .metadata()
-                    .then(() =>
-                        sharp(imageBuffer)
-                            .sharpen({ sigma: 2 })
-                    );
+                    .then(() => sharp(imageBuffer).sharpen({ sigma: 2 }));
                 sharpInstance.png().toFile("./photo.png");
                 const processedBuffer = await sharpInstance.toBuffer();
                 const processedBase64 = `data:image/png;base64,${processedBuffer.toString("base64")}`;
                 const image = await loadImage(processedBase64);
                 const width = image.width;
                 const height = image.height;
-                const imagemessage = encoder.align("center").image(image, width, height, "atkinson").align("center");
+                const imagemessage = encoder.align("center").image(image, width, height, "atkinson");
                 if (input.message) {
-                    imagemessage.text(input.message);
+                    imagemessage.align("center").text(input.message);
                     imagemessage.newline(2);
                 }
-                imagemessage.text(input.ip_address || "No IP Address");
-                imagemessage.newline(2);
-                imagemessage.text(input.user_agent || "No User Agent");
+                if (DEBUG) {
+                    imagemessage.align("center").text(input.ip_address || "No IP Address");
+                    imagemessage.newline(2);
+                    imagemessage.align("center").text(input.user_agent || "No User Agent");
+                }
                 client.write(imagemessage.cut().encode());
                 return `Photo printed!`;
             } catch (e) {
