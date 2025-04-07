@@ -1,8 +1,8 @@
-node_modules
 .astro
+.devcontainer
 .git
 .github
 .vscode
 dist
-.devcontainer
 .DS_Store
+node_modules
