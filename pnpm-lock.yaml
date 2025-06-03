@@ -13,7 +13,7 @@ importers:
         version: 9.1.3(astro@5.6.1(@types/node@22.14.0)(rollup@4.39.0)(typescript@5.7.2)(yaml@2.7.1))
       '@point-of-sale/receipt-printer-encoder':
         specifier: github:cervantes-x/ReceiptPrinterEncoder
-        version: https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/b873d722603bd7735cd9d1814a59cb003d54c19a
+        version: https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/577487da93b2837654b955a99442ec9262df6841
       astro:
         specifier: ^5.6.1
         version: 5.6.1(@types/node@22.14.0)(rollup@4.39.0)(typescript@5.7.2)(yaml@2.7.1)
@@ -511,9 +511,9 @@ packages:
   '@point-of-sale/codepage-encoder@3.0.0':
     resolution: {integrity: sha512-HNNptRtuj5KjjqIhMpelUJFxkkX5Epk7v2pqXqTsBxbZrO/W5GLSsC5liG7wYuru1+xBF5VaotwIXGq4FweFMA==}
 
-  '@point-of-sale/receipt-printer-encoder@https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/b873d722603bd7735cd9d1814a59cb003d54c19a':
-    resolution: {tarball: https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/b873d722603bd7735cd9d1814a59cb003d54c19a}
-    version: 3.0.2
+  '@point-of-sale/receipt-printer-encoder@https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/577487da93b2837654b955a99442ec9262df6841':
+    resolution: {tarball: https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/577487da93b2837654b955a99442ec9262df6841}
+    version: 3.0.3
 
   '@rollup/pluginutils@5.1.4':
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==}
@@ -2240,7 +2240,7 @@ snapshots:
 
   '@point-of-sale/codepage-encoder@3.0.0': {}
 
-  '@point-of-sale/receipt-printer-encoder@https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/b873d722603bd7735cd9d1814a59cb003d54c19a':
+  '@point-of-sale/receipt-printer-encoder@https://codeload.github.com/cervantes-x/ReceiptPrinterEncoder/tar.gz/577487da93b2837654b955a99442ec9262df6841':
     dependencies:
       '@canvas/image-data': 1.0.0
       '@point-of-sale/codepage-encoder': 3.0.0
