@@ -171,12 +171,12 @@ const userAgent = Astro.request.headers.get("user-agent");
 
         const imageData = context.getImageData(0, 0, width, height) as ImageData;
         console.log(imageData);
-        for (let i = 0; i < imageData.data.length; i += 4) {
-            const brightness = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 2;
-            imageData.data[i] = brightness;
-            imageData.data[i + 1] = brightness;
-            imageData.data[i + 2] = brightness;
-        }
+        //for (let i = 0; i < imageData.data.length; i += 4) {
+         //   const brightness = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 2;
+         //   imageData.data[i] = brightness;
+          //  imageData.data[i + 1] = brightness;
+         //   imageData.data[i + 2] = brightness;
+       // }
 
         context.putImageData(imageData, 0, 0);
         console.log();
