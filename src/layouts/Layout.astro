@@ -1,5 +1,5 @@
 ---
-const { title = "Receipt Printer Utilities" } = Astro.props;
+const { title = "Receipt Printer Utilities", description = "A web app for printing receipts" } = Astro.props;
 ---
 
 <!doctype html>
@@ -12,6 +12,10 @@ const { title = "Receipt Printer Utilities" } = Astro.props;
         <meta name="apple-mobile-web-app-title" content="Receipt Camera" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-1000x1000.png" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="og:title" content={title} />
+        <meta name="og:description" content={description} />
+        <meta name="og:image" content="/apple-touch-icon-1000x1000.png" />
+        <meta name="og:url" content={Astro.url} />
         <meta name="generator" content={Astro.generator} /><title>
             {title}
         </title>
