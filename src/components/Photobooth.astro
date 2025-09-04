@@ -25,18 +25,29 @@ const userAgent = Astro.request.headers.get("user-agent");
 </main>
 
 <style>
+    video {
+        width: 100%;
+        height: auto;
+        max-height: 60vh;
+        background-color: black;
+        /* object-fit: cover; */
+        border-radius: 20px;
+    }
+
     #message {
         margin: 0 10%;
         font-size: 1.6rem;
         /* padding: 5px; */
     }
     main {
-        height: 100vh;
+        /* height: 100vh; */
         max-width: 500px;
         display: flex;
         flex-direction: column;
         gap: 30px;
         margin: 0 auto;
+        padding: 20px 0;
+        position: relative;
     }
     div {
         display: flex;

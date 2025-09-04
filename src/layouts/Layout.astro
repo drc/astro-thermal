@@ -6,32 +6,42 @@ const { title = "Receipt Printer Utilities" } = Astro.props;
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"
-        />
-        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="initial-scale=1, viewport-fit=cover, width=device-width" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-
-        <!-- possible content values: default, black or black-translucent -->
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Receipt Camera" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-1000x1000.png" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
+        <meta name="generator" content={Astro.generator} /><title>
+            {title}
+        </title>
     </head>
+
+    <!-- possible content values: default, black or black-translucent -->
+
     <body>
         <slot />
     </body>
-</html>
 
-<style>
-    html,
-    body {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-    }
-    body {
-        touch-action: pan-x pan-y;
-    }
-</style>
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            touch-action: pan-x pan-y;
+        }
+
+        html {
+            min-height: calc(100% + env(safe-area-inset-top));
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+                env(safe-area-inset-left);
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</html>
