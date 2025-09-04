@@ -1,0 +1,4 @@
+astro.localhost {
+	reverse_proxy localhost:4321
+	tls internal
+}
