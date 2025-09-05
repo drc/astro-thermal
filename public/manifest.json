@@ -22,7 +22,8 @@
     {
       "src": "android-icon.png",
       "sizes": "144x144",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "apple-touch-icon.png",
