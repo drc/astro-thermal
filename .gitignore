@@ -26,3 +26,4 @@ pnpm-debug.log*
 *.png
 !app-icon.png
 !app-icon-highres.png
+!android-app.png
