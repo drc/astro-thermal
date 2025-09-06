@@ -7,13 +7,42 @@ const userAgent = Astro.request.headers.get("user-agent");
 ---
 
 <main>
-    
+    <h1>Hello World</h1>
+    <label for="file-input">Take a picture</label>
+    <input type="file" accept="image/*" capture="camera" id="file-input" style="display: none;" />
+    <img alt="Placeholder" id="result" />
 </main>
 
-<style>
-
-</style>
+<style></style>
 
 <script>
+    const fileDataURL = (file: Blob) =>
+        new Promise((resolve, reject) => {
+            let fr = new FileReader();
+            fr.onload = () => resolve(fr.result);
+            fr.onerror = reject;
+            fr.readAsDataURL(file);
+        });
 
+    function showResult(file: Blob) {
+        fileDataURL(file)
+            .then((data) => {
+                const resultImg = document.getElementById("result") as HTMLImageElement | null;
+                if (resultImg) {
+                    resultImg.src = data as string;
+                }
+            })
+            .catch((err) => console.log(err));
+    }
+
+    const fileInput = document.querySelector("#file-input") as HTMLInputElement | null;
+    if (fileInput) {
+        fileInput.addEventListener("change", function() {
+            const files = this.files;
+            const file = files && files[0];
+            if (file) {
+                showResult(file);
+            }
+        });
+    }
 </script>
