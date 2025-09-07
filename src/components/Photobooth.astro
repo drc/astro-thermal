@@ -1,16 +1,21 @@
 ---
-import camera from "@/assets/camera.svg";
-import cameraRotate from "@/assets/camera-rotate.svg";
-import light from "@/assets/light.svg";
 const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
+import { actions } from "astro:actions";
+const result = Astro.getActionResult(actions.handlePhoto);
 ---
 
 <main>
     <h1>Hello World</h1>
-    <label for="file-input">Take a picture</label>
-    <input type="file" accept="image/*" capture="camera" id="file-input" style="display: none;" />
-    <img alt="Placeholder" id="result" />
+    {result?.error && <p style="color: red">{result.error}</p>}
+    <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
+        <label for="file_input">Take a picture</label>
+        <input type="file" accept="image/*" capture="camera" name="picture" id="file_input" style="display: none;" />
+        <input type="hidden" name="ip" value={ip ?? ""} />
+        <input type="hidden" name="userAgent" value={userAgent ?? ""} />
+        <img alt="Placeholder" id="result" />
+        <button type="submit">Submit</button>
+    </form>
 </main>
 
 <style></style>
@@ -35,10 +40,11 @@ const userAgent = Astro.request.headers.get("user-agent");
             .catch((err) => console.log(err));
     }
 
-    const fileInput = document.querySelector("#file-input") as HTMLInputElement | null;
+    const fileInput = document.querySelector("#file_input") as HTMLInputElement | null;
     if (fileInput) {
-        fileInput.addEventListener("change", function() {
+        fileInput.addEventListener("change", function () {
             const files = this.files;
+            console.log({ files });
             const file = files && files[0];
             if (file) {
                 showResult(file);
