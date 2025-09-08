@@ -18,7 +18,14 @@ const result = Astro.getActionResult(actions.handlePhoto);
     </form>
 </main>
 
-<style></style>
+<style>
+    img {
+        max-width: 300px;
+        margin-top: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+</style>
 
 <script>
     const fileDataURL = (file: Blob) =>

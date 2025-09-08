@@ -35,17 +35,17 @@ export const server = {
 				.sharpen({ sigma: 2 });
 
 			const metadata = await sharpInstance.metadata();
-			// Use rotated image dimensions
+			// Crop to centered square, max 576x576
 			const maxPrinterWidth = 576;
-			const rotatedWidth = metadata.width ?? maxPrinterWidth;
-			const rotatedHeight = metadata.height ?? maxPrinterWidth;
-			const cappedWidth = Math.min(rotatedWidth, maxPrinterWidth);
-			const targetWidth = Math.floor(cappedWidth / 8) * 8;
-			const aspectRatio = rotatedHeight / rotatedWidth;
-			const targetHeight = Math.round(targetWidth * aspectRatio);
-
+			const size = Math.min(metadata.width ?? maxPrinterWidth, metadata.height ?? maxPrinterWidth, maxPrinterWidth);
+			const targetSize = Math.floor(size / 8) * 8;
 			const processedImage = await sharpInstance
-				.resize({ width: targetWidth, fit: "outside" })
+				.resize({
+					width: targetSize,
+					height: targetSize,
+					fit: "cover",
+					position: "center"
+				})
 				.toColorspace("b-w")
 				.png({ colors: 4 })
 				.toBuffer();
@@ -55,7 +55,7 @@ export const server = {
 			const image = await loadImage(processedImage);
 			const imagemessage = encoder
 				.align("center")
-				.image(image, targetWidth, targetHeight, "atkinson")
+				.image(image, targetSize, targetSize, "atkinson")
 				.newline(2);
 			client.write(imagemessage.cut().encode());
 			return;
