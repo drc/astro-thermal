@@ -4,7 +4,7 @@ import { createCanvas, loadImage } from "canvas";
 import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
-import { sharpImageService } from "astro/config";
+import {} from "astro:assets";
 
 const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
 
@@ -19,7 +19,7 @@ export const server = {
 	handlePhoto: defineAction({
 		accept: "form",
 		input: z.object({
-			picture: z.instanceof(File).optional(),
+			picture: z.instanceof(File),
 			ip: z.string().optional(),
 			userAgent: z.string().optional(),
 		}),
@@ -30,21 +30,25 @@ export const server = {
 			const arrayBuffer = await picture.arrayBuffer();
 			const imageBuffer = Buffer.from(arrayBuffer);
 
-			const sharpInstance = await sharp(imageBuffer)
+			const sharpInstance = sharp(imageBuffer)
 				.rotate() // Apply EXIF orientation
 				.sharpen({ sigma: 2 });
 
 			const metadata = await sharpInstance.metadata();
 			// Crop to centered square, max 576x576
 			const maxPrinterWidth = 576;
-			const size = Math.min(metadata.width ?? maxPrinterWidth, metadata.height ?? maxPrinterWidth, maxPrinterWidth);
+			const size = Math.min(
+				metadata.width ?? maxPrinterWidth,
+				metadata.height ?? maxPrinterWidth,
+				maxPrinterWidth,
+			);
 			const targetSize = Math.floor(size / 8) * 8;
 			const processedImage = await sharpInstance
 				.resize({
 					width: targetSize,
 					height: targetSize,
 					fit: "cover",
-					position: "center"
+					position: "center",
 				})
 				.toColorspace("b-w")
 				.png({ colors: 4 })
