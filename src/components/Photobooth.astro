@@ -1,220 +1,196 @@
 ---
-import camera from "@/assets/camera.svg";
-import cameraRotate from "@/assets/camera-rotate.svg";
-import light from "@/assets/light.svg";
 const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
+import { actions } from "astro:actions";
+const result = Astro.getActionResult(actions.handlePhoto);
 ---
 
 <main>
-    <button id="torch">
-        <img src={light.src} alt="Glyph of a lightbulb" />
-    </button>
-    <video playsinline muted autoplay></video>
-    <canvas style="display: none;"></canvas>
-    <input type="text" name="message" id="message" placeholder="Include a message" />
-    <input type="text" name="ip" id="ip" value={ip} style="display: none;" />
-    <input type="text" name="userAgent" id="userAgent" value={userAgent} style="display: none;" />
-    <p id="printed" style="display: none;">Photo Printed!</p>
-    <div>
-        <button id="switch">
-            <img src={cameraRotate.src} alt="Glyph of a camera with arrows indicating to switch the camera" />
-        </button>
-        <button id="snap"><img src={camera.src} alt="Glyph of a camera" /></button>
-    </div>
+    <h1>ReceiptCam</h1>
+    {result?.error && <p style="color: red">{result.error}</p>}
+    <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
+        <label for="file_input" class="btn secondary" tabindex="0">Take a picture</label>
+        <input type="file" accept="image/*" capture="camera" name="picture" id="file_input" style="display: none;" />
+        <input type="hidden" name="ip" value={ip ?? ""} />
+        <input type="hidden" name="userAgent" value={userAgent ?? ""} />
+        <img alt="Placeholder" id="result" />
+        <button type="submit" class="btn primary">Print!</button>
+    </form>
 </main>
 
 <style>
-    video {
-        width: 100%;
-        height: auto;
-        max-height: 60vh;
-        background-color: black;
-        /* object-fit: cover; */
-        border-radius: 20px;
-    }
-
-    #message {
-        margin: 0 10%;
-        font-size: 1.6rem;
-        /* padding: 5px; */
-    }
     main {
-        /* height: 100vh; */
-        max-width: 500px;
         display: flex;
         flex-direction: column;
-        gap: 30px;
-        margin: 0 auto;
-        padding: 20px 0;
-        position: relative;
-    }
-    div {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        justify-content: space-around;
-        background-color: black;
-        padding: 20px;
-    }
-    button {
-        img {
-            width: 45px;
-            height: 50px;
-        }
-        border: none;
-        width: 75px;
-        height: 75px;
-        display: flex;
-        justify-content: center;
         align-items: center;
-        height: auto;
-        background-color: white;
-        color: black;
-        padding: 10px 20px;
-        border-radius: 50px;
+        justify-content: center;
+        padding: 2rem;
     }
-    #snap {
-        background-color: white;
-        color: black;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
-    #snap:disabled {
-        background-color: grey;
-        img {
-            display: none;
-        }
+    img {
+        max-width: 300px;
+        margin-top: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
     }
-    p#printed {
+
+    img:not([src]),
+    img[src=""] {
+        display: none;
+    }
+</style>
+
+<style is:global>
+    :root {
+        --color-primary: #0b7285;
+        --color-primary-dark: #095c66;
+        --color-secondary: #0ea5ff;
+        --color-secondary-dark: #0284c7;
+        --color-gradient-1: #4fc3ff;
+        --color-gradient-2: #2fd2c9;
+        --color-gradient-3: #00b4ff;
+    }
+    /* Make the page use the app-icon-like gradient and center the content */
+    html,
+    body {
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: inherit;
+    }
+
+    body {
+        margin: 0;
+        /* Use the dynamic viewport unit to avoid mobile-UI chrome resizing issues */
+        min-height: 100dvh;
+        /* Put the page padding on the body (with safe-area support) instead of the card's margin
+           so the card won't cause overflow when the viewport height is reduced by mobile chrome */
+        padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem)
+            env(safe-area-inset-left, 1rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-family:
             system-ui,
             -apple-system,
-            BlinkMacSystemFont,
             "Segoe UI",
             Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Open Sans",
             "Helvetica Neue",
-            sans-serif;
-        text-align: center;
-        font-size: 1.6rem;
-        color: green;
+            Arial;
+        background:
+            radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.25), transparent 12%),
+            linear-gradient(
+                135deg,
+                var(--color-gradient-1) 0%,
+                var(--color-gradient-2) 45%,
+                var(--color-gradient-3) 100%
+            );
+        background-repeat: no-repeat;
+        background-size: cover;
     }
-    button#torch {
-        background-color: transparent;
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 30px;
-        height: 30px;
+
+    main {
+        width: min(800px, 90%);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 22px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        padding: 2rem;
+        margin: 0;
+    }
+
+    /* unified button styles: medium between skeuomorphic and flat */
+    .btn {
+        cursor: pointer;
+        display: inline-block;
+        padding: 0.6rem 1.1rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.06));
+        backdrop-filter: blur(0.2px);
+        box-shadow:
+            0 6px 18px rgba(11, 114, 133, 0.14),
+            inset 0 -2px 0 rgba(255, 255, 255, 0.06);
+        transition:
+            transform 120ms ease,
+            box-shadow 120ms ease,
+            filter 120ms ease;
+        margin-top: 0.6rem;
+        text-align: center;
+    }
+
+    .btn:active {
+        transform: translateY(1px) scale(0.998);
+        box-shadow:
+            0 3px 10px rgba(11, 114, 133, 0.12),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .btn.primary {
+        background: linear-gradient(180deg, var(--color-primary), var(--color-primary-dark));
+        box-shadow:
+            0 8px 22px rgba(11, 114, 133, 0.18),
+            inset 0 -3px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .btn.secondary {
+        background: linear-gradient(180deg, var(--color-secondary), var(--color-secondary-dark));
+        box-shadow:
+            0 8px 22px rgba(14, 165, 255, 0.14),
+            inset 0 -3px 0 rgba(255, 255, 255, 0.04);
     }
 </style>
 
 <script>
-    import { actions } from "astro:actions";
+    const fileDataURL = (file: Blob) =>
+        new Promise((resolve, reject) => {
+            let fr = new FileReader();
+            fr.onload = () => resolve(fr.result);
+            fr.onerror = reject;
+            fr.readAsDataURL(file);
+        });
 
-    const constraints = {
-        video: {
-            width: { min: 512, ideal: 512, max: 512 },
-            height: { min: 512, ideal: 512, max: 512 },
-            facingMode: { ideal: "environment" },
-        },
-    };
-
-    const videoRef = document.querySelector("video") as HTMLVideoElement;
-
-    let stream = await navigator.mediaDevices.getUserMedia(constraints);
-    if (videoRef) {
-        const facingMode = stream.getVideoTracks()[0].getSettings().facingMode;
-        if (facingMode === undefined) {
-            videoRef.style.transform = "rotateY(180deg)";
-        }
-        videoRef.srcObject = stream;
-        videoRef.play();
+    function showResult(file: Blob) {
+        fileDataURL(file)
+            .then((data) => {
+                const resultImg = document.getElementById("result") as HTMLImageElement | null;
+                if (resultImg) {
+                    resultImg.src = data as string;
+                }
+            })
+            .catch((err) => console.log(err));
     }
 
-    const switchButton = document.querySelector("button#switch") as HTMLButtonElement;
-    switchButton.addEventListener("click", async () => {
-        const facingMode = stream.getVideoTracks()[0].getSettings().facingMode;
-        const tracks = stream.getVideoTracks();
-        tracks[0].stop();
-
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { ...constraints.video, facingMode: facingMode === "user" ? "environment" : "user" },
+    const fileInput = document.querySelector("#file_input") as HTMLInputElement | null;
+    if (fileInput) {
+        fileInput.addEventListener("change", function () {
+            const files = this.files;
+            console.log({ files });
+            const file = files && files[0];
+            if (file) {
+                showResult(file);
+            }
         });
-        videoRef.srcObject = stream;
-        videoRef.play();
-        videoRef.style.transform = "";
-        if (facingMode !== "user") {
-            videoRef.style.transform = "rotateY(180deg)";
-        }
-    });
+    }
 
-    const torchButton = document.querySelector("button#torch") as HTMLButtonElement;
-    torchButton.addEventListener("click", async () => {
-        const tracks = stream.getVideoTracks();
-        const track = tracks[0];
-        const capabilities = track.getCapabilities();
-        console.log(capabilities);
-        if ((capabilities as any).torch) {
-            const torchEnabled = (track.getConstraints() as any).advanced?.[0]?.torch ?? false;
-            console.log(torchEnabled);
-            await track.applyConstraints({ advanced: [{ torch: !torchEnabled }] } as any);
-        }
-    });
-
-    const cameraButton = document.querySelector("button#snap") as HTMLButtonElement;
-    cameraButton.addEventListener("click", async (e: MouseEvent) => {
-        const canvasRef = document.querySelector("canvas") as HTMLCanvasElement;
-        const context = canvasRef.getContext("2d", {
-            willReadFrequently: true,
-            alpha: false,
-            desynchronized: true,
-        }) as CanvasRenderingContext2D;
-        const aspectRatio = (videoRef.videoWidth ?? 1) / (videoRef.videoHeight ?? 1);
-        const width = videoRef.videoWidth ?? 600;
-        const height = Math.floor((width / aspectRatio) * 8) / 8;
-        canvasRef.width = width;
-        canvasRef.height = height;
-
-        context.drawImage(videoRef, 0, 0, width, height);
-
-        const imageData = context.getImageData(0, 0, width, height) as ImageData;
-        console.log(imageData);
-        //for (let i = 0; i < imageData.data.length; i += 4) {
-         //   const brightness = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 2;
-         //   imageData.data[i] = brightness;
-          //  imageData.data[i + 1] = brightness;
-         //   imageData.data[i + 2] = brightness;
-       // }
-
-        context.putImageData(imageData, 0, 0);
-        console.log();
-        const imageDataUrl = canvasRef.toDataURL("image/png");
-        const messageInput = document.querySelector("input#message") as HTMLInputElement;
-        const ipInput = document.querySelector("input#ip") as HTMLInputElement;
-        const userAgentInput = document.querySelector("input#userAgent") as HTMLInputElement;
-        const { data: _data, error } = await actions.printPhoto({
-            imageDataUrl,
-            message: messageInput.value,
-            ip_address: ipInput.value,
-            user_agent: userAgentInput.value,
+    // allow keyboard activation of the label that opens the file picker
+    const fileLabel = document.querySelector('label[for="file_input"]') as HTMLElement | null;
+    if (fileLabel && fileInput) {
+        fileLabel.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileInput.click();
+            }
         });
-        if (error) console.error(error);
-        if (!error) {
-            messageInput.value = "";
-            const successMessage = document.querySelector("p#printed") as HTMLParagraphElement;
-            successMessage.style.display = "block";
-            cameraButton.disabled = true;
-            videoRef.style.display = "none";
-            canvasRef.style.display = "";
-            setTimeout(() => {
-                successMessage.style.display = "none";
-                videoRef.style.display = "";
-                canvasRef.style.display = "none";
-                cameraButton.disabled = false;
-            }, 3000);
-        }
-    });
+    }
 </script>
