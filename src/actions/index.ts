@@ -61,7 +61,11 @@ export const server = {
 				.image(image, targetSize, targetSize, "atkinson")
 				.newline(2);
 			client.write(imagemessage.cut().encode());
-			return;
+			return {
+				success: true,
+				message: "Photo processed and sent to printer.",
+				debug: DEBUG ? { ip, userAgent, targetSize } : undefined,
+			};
 		},
 	}),
 };
