@@ -9,8 +9,16 @@ const result = Astro.getActionResult(actions.handlePhoto);
     <h1>ReceiptCam</h1>
     {result?.error && <p style="color: red">{result.error}</p>}
     <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
-        <label for="file_input" class="btn secondary" tabindex="0">Take a picture</label>
-        <input type="file" accept="image/*" capture="camera" name="picture" id="file_input" style="display: none;" />
+        <label for="file_input" class="btn secondary" tabindex="0">
+            Take or upload a photo
+        </label>
+        <input
+            type="file"
+            accept="image/*"
+            name="picture"
+            id="file_input"
+            style="display: none;"
+        />
         <input type="hidden" name="ip" value={ip ?? ""} />
         <input type="hidden" name="userAgent" value={userAgent ?? ""} />
         <img alt="Placeholder" id="result" />
