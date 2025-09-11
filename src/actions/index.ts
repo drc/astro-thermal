@@ -4,7 +4,6 @@ import { createCanvas, loadImage } from "canvas";
 import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
-import {} from "astro:assets";
 
 const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
 
