@@ -69,10 +69,7 @@ const result = Astro.getActionResult(actions.handlePhoto);
 
     body {
         margin: 0;
-        /* Use the dynamic viewport unit to avoid mobile-UI chrome resizing issues */
-        min-height: 100dvh;
-        /* Put the page padding on the body (with safe-area support) instead of the card's margin
-           so the card won't cause overflow when the viewport height is reduced by mobile chrome */
+        min-height: 100svh;
         padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem)
             env(safe-area-inset-left, 1rem);
         display: flex;
@@ -97,6 +94,12 @@ const result = Astro.getActionResult(actions.handlePhoto);
         background-size: cover;
     }
 
+    @supports not (height: 100svh) {
+        body {
+            min-height: 100vh;
+        }
+    }
+
     main {
         width: min(800px, 90%);
         background: rgba(255, 255, 255, 0.9);
@@ -106,7 +109,6 @@ const result = Astro.getActionResult(actions.handlePhoto);
         margin: 0;
     }
 
-    /* unified button styles: medium between skeuomorphic and flat */
     .btn {
         cursor: pointer;
         display: inline-block;

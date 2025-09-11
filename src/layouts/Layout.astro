@@ -39,15 +39,12 @@ const { title = "Receipt Printer Utilities", description = "A web app for printi
             width: 100%;
             height: 100%;
         }
+
         body {
             touch-action: pan-x pan-y;
         }
 
         html {
-            min-height: calc(100% + env(safe-area-inset-top));
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-                env(safe-area-inset-left);
-
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
