@@ -20,6 +20,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.18.1",
+    "cloudflared": "^0.7.1",
     "ngrok": "5.0.0-beta.2",
     "prettier": "^3.6.2"
   },

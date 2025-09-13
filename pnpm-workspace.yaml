@@ -1,6 +1,7 @@
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - canvas
+  - cloudflared
   - esbuild
   - ngrok
   - sharp

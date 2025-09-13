@@ -56,10 +56,18 @@ export const server = {
 			await sharp(processedImage).toFile("./photo.png");
 
 			const image = await loadImage(processedImage);
+			
 			const imagemessage = encoder
 				.align("center")
 				.image(image, targetSize, targetSize, "atkinson")
 				.newline(2);
+			if (DEBUG) {
+				imagemessage.text(ip ? `IP: ${ip}` : "IP: unknown").newline(2);
+
+				imagemessage
+					.text(userAgent ? `User-Agent: ${userAgent}` : "User-Agent: unknown")
+					.newline(2);
+			}
 			client.write(imagemessage.cut().encode());
 			return {
 				success: true,
