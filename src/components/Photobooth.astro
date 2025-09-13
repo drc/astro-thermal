@@ -3,27 +3,35 @@ const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
 import { actions } from "astro:actions";
 const result = Astro.getActionResult(actions.handlePhoto);
+const images = await Astro.callAction(actions.getCurrentPhotos, {});
 ---
 
 <main>
     <h1>ReceiptCam</h1>
     {result?.error && <p style="color: red">{result.error}</p>}
     <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
-        <label for="file_input" class="btn secondary" tabindex="0">
-            Take or upload a photo
-        </label>
-        <input
-            type="file"
-            accept="image/*"
-            name="picture"
-            id="file_input"
-            style="display: none;"
-        />
+        <label for="file_input" class="btn secondary" tabindex="0"> Take or upload a photo </label>
+        <input type="file" accept="image/*" name="picture" id="file_input" style="display: none;" />
         <input type="hidden" name="ip" value={ip ?? ""} />
         <input type="hidden" name="userAgent" value={userAgent ?? ""} />
         <img alt="Placeholder" id="result" />
         <button type="submit" class="btn primary">Print!</button>
     </form>
+    {
+        images?.data && images.data.length > 0 && (
+            <>
+                <h2>Recent Photos</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    {images.data.map((img) => (
+                        <img
+                            src={`data:image/png;base64,${Buffer.from(img.data).toString("base64")}`}
+                            alt={`Uploaded image ${img.id}`}
+                        />
+                    ))}
+                </div>
+            </>
+        )
+    }
 </main>
 
 <style>
