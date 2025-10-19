@@ -11,7 +11,7 @@ export default defineConfig({
 	}),
 	output: "server",
 	server: {
-		allowedHosts: [".ngrok-free.app", ".trycloudflare.com"],
+		allowedHosts: [".ngrok-free.app", ".trycloudflare.com", "development.dancigrang.dev"],
 	},
 	vite: {
 		resolve: {

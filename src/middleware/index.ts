@@ -30,7 +30,7 @@ export const onRequest = defineMiddleware((context, next) => {
             status: 429,
             headers: {
                 "Content-Type": "application/json",
-                "Retry-After": "" + Math.ceil((userLimit.resetTime - now) / 1000),
+                "Retry-After": `${Math.ceil((userLimit.resetTime - now) / 1000)}`,
             },
         });
     }

@@ -3,36 +3,54 @@ const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
 import { actions } from "astro:actions";
 const result = Astro.getActionResult(actions.handlePhoto);
+const images = await Astro.callAction(actions.getCurrentPhotos, {});
 ---
 
 <main>
     <h1>ReceiptCam</h1>
     {result?.error && <p style="color: red">{result.error}</p>}
     <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
-        <label for="file_input" class="btn secondary" tabindex="0">
-            Take or upload a photo
-        </label>
-        <input
-            type="file"
-            accept="image/*"
-            name="picture"
-            id="file_input"
-            style="display: none;"
-        />
+        <label for="file_input" class="btn secondary" tabindex="0"> Take or upload a photo </label>
+        <input type="file" accept="image/*" name="picture" id="file_input" style="display: none;" />
         <input type="hidden" name="ip" value={ip ?? ""} />
         <input type="hidden" name="userAgent" value={userAgent ?? ""} />
         <img alt="Placeholder" id="result" />
         <button type="submit" class="btn primary">Print!</button>
     </form>
+    {
+        images?.data && images.data.length > 0 && (
+            <>
+                <h2>Recent Photos</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    {images.data.map((img) => (
+                        <img
+                            src={`data:image/png;base64,${img.data.toString("base64")}`}
+                            alt={`Uploaded image ${img.id}`}
+                            height="200"
+                            width="auto"
+                        />
+                    ))}
+                </div>
+            </>
+        )
+    }
 </main>
 
 <style>
+
     main {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 22px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        margin: 0;
+        height: min(80svh, 90vh);
         padding: 2rem;
+        width: min(800px, 80%);
+        overflow-y: auto;
     }
     form {
         display: flex;
@@ -49,72 +67,6 @@ const result = Astro.getActionResult(actions.handlePhoto);
     img:not([src]),
     img[src=""] {
         display: none;
-    }
-</style>
-
-<style is:global>
-    :root {
-        --color-primary: #0b7285;
-        --color-primary-dark: #095c66;
-        --color-secondary: #0ea5ff;
-        --color-secondary-dark: #0284c7;
-        --color-gradient-1: #4fc3ff;
-        --color-gradient-2: #2fd2c9;
-        --color-gradient-3: #00b4ff;
-    }
-    /* Make the page use the app-icon-like gradient and center the content */
-    html,
-    body {
-        height: 100%;
-        box-sizing: border-box;
-    }
-
-    *,
-    *::before,
-    *::after {
-        box-sizing: inherit;
-    }
-
-    body {
-        margin: 0;
-        min-height: 100svh;
-        padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem)
-            env(safe-area-inset-left, 1rem);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family:
-            system-ui,
-            -apple-system,
-            "Segoe UI",
-            Roboto,
-            "Helvetica Neue",
-            Arial;
-        background:
-            radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.25), transparent 12%),
-            linear-gradient(
-                135deg,
-                var(--color-gradient-1) 0%,
-                var(--color-gradient-2) 45%,
-                var(--color-gradient-3) 100%
-            );
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-
-    @supports not (height: 100svh) {
-        body {
-            min-height: 100vh;
-        }
-    }
-
-    main {
-        width: min(800px, 90%);
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 22px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-        padding: 2rem;
-        margin: 0;
     }
 
     .btn {

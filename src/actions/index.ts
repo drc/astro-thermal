@@ -4,6 +4,7 @@ import { createCanvas, loadImage } from "canvas";
 import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
+import db from "@/lib/database";
 
 const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
 
@@ -53,6 +54,8 @@ export const server = {
 				.png({ colors: 4 })
 				.toBuffer();
 
+			db.run("INSERT INTO images (data) VALUES (?)", processedImage);
+
 			await sharp(processedImage).toFile("./photo.png");
 
 			const image = await loadImage(processedImage);
@@ -74,6 +77,28 @@ export const server = {
 				message: "Photo processed and sent to printer.",
 				debug: DEBUG ? { ip, userAgent, targetSize } : undefined,
 			};
+		},
+	}),
+	getCurrentPhotos: defineAction({
+		accept: "json",
+		input: z.object({}),
+		handler: async (_input, _context) => {
+			return new Promise<{ id: number; data: Buffer }[]>((resolve, reject) => {
+				db.all(
+					"SELECT id, data FROM images ORDER BY id DESC LIMIT 10",
+					(err: Error | null, rows: { id: number; data: Buffer }[]) => {
+						if (err) {
+							reject(err);
+						} else {
+							const formattedRows = rows.map((row) => ({
+								id: row.id,
+								data: Buffer.from(row.data),
+							}));
+							resolve(formattedRows);
+						}
+					},
+				);
+			});
 		},
 	}),
 };
