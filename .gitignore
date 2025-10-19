@@ -30,5 +30,3 @@ pnpm-debug.log*
 
 # cloudflared config file
 config.yml
-# Cloudflare Tunnel
-.cloudflared/
