@@ -27,3 +27,8 @@ pnpm-debug.log*
 !app-icon.png
 !app-icon-highres.png
 !android-app.png
+
+# cloudflared config file
+config.yml
+# Cloudflare Tunnel
+.cloudflared/
