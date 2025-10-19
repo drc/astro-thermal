@@ -24,7 +24,7 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
                 <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
                     {images.data.map((img) => (
                         <img
-                            src={`data:image/png;base64,${Buffer.from(img.data).toString("base64")}`}
+                            src={`data:image/png;base64,${img.data.toString("base64")}`}
                             alt={`Uploaded image ${img.id}`}
                             height="200"
                             width="auto"
