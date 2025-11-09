@@ -8,7 +8,7 @@ export const POST: APIRoute = async ({ request }) => {
 		return new Response("", { status: 400 });
 	}
 
-	takeScreenshot(`http://localhost:4321/todo?item=${encodeURIComponent(todo)}`);
+	await takeScreenshot(`http://localhost:4321/todo?item=${encodeURIComponent(todo)}`);
 
 	return new Response("", { status: 201 });
 };
