@@ -14,7 +14,6 @@ export async function takeScreenshot(path: string) {
 	// Convert screenshot to raw RGBA pixel buffer at the desired size
 	const { data, info } = await sharp(ss)
 		.ensureAlpha() // make sure we have RGBA
-		// .resize(576)      // target size
 		.raw() // get raw pixel data
 		.toBuffer({ resolveWithObject: true });
 
