@@ -61,5 +61,5 @@ declare const globalThis: {
 } & typeof global;
 
 export const encoder: ReceiptPrinterEncoder = new ReceiptPrinterEncoder({
-	feedBeforeCut: 10,
+	feedBeforeCut: 5,
 });
