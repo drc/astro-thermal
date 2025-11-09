@@ -3,7 +3,15 @@ const item = Astro.url.searchParams.get("item") || "No item provided";
 ---
 
 <main title="Todo Item">
-    <h1>{new Intl.DateTimeFormat("en-US", { dateStyle: "short", timeStyle: "short" }).format(new Date())}</h1>
+    <h1>
+        {
+            new Intl.DateTimeFormat("en-US", {
+                dateStyle: "short",
+                timeStyle: "short",
+                timeZone: "America/Chicago",
+            }).format(new Date())
+        }
+    </h1>
     <p>{item}</p>
 </main>
 
