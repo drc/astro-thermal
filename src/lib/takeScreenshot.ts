@@ -18,7 +18,6 @@ export async function takeScreenshot(path: string) {
 			.raw() // get raw pixel data
 			.toBuffer({ resolveWithObject: true });
 
-		const aspectRatio = info.width / info.height;
 		const height = Math.floor(info.height / 8) * 8;
 
 		// Create ImageData from the raw buffer (Uint8ClampedArray required)
