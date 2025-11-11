@@ -1,11 +1,9 @@
-FROM node:20-slim AS base
+FROM mcr.microsoft.com/playwright:v1.40.0-jammy AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-
 RUN corepack install -g pnpm@10.15.1
-
 ENV COREPACK_INTEGRITY_KEYS=0
 
 COPY . /app
@@ -22,8 +20,6 @@ FROM base
 
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
-
-RUN pnpm exec playwright install --with-deps chromium
 
 ENV HOST=0.0.0.0
 ENV PORT=4321

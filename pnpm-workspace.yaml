@@ -4,5 +4,7 @@ onlyBuiltDependencies:
   - cloudflared
   - esbuild
   - ngrok
+  - onnxruntime-node
+  - protobufjs
   - sharp
   - sqlite3
