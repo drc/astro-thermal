@@ -9,9 +9,10 @@
     "astro": "astro",
     "start": "node dist/server/entry.mjs"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.21.0",
   "dependencies": {
     "@astrojs/node": "^9.5.0",
+    "@huggingface/transformers": "^3.7.6",
     "@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
     "astro": "^5.15.4",
     "canvas": "^3.2.0",

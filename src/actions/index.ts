@@ -5,6 +5,7 @@ import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
 import db from "@/lib/database";
+import { pipeline, type ImageToTextOutput } from "@huggingface/transformers";
 
 const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
 
@@ -56,14 +57,48 @@ export const server = {
 
 			db.run("INSERT INTO images (data) VALUES (?)", processedImage);
 
-			await sharp(processedImage).toFile("./photo.png");
+			await sharp(processedImage).toFile("./photo-bw.png");
+
+			const captioner = await pipeline(
+				"image-to-text",
+				"Xenova/vit-gpt2-image-captioning",
+				{ device: "cpu", dtype: "fp32" },
+			);
+
+			// The second parameter are generation/inference options forwarded to the model.
+			// Common options (map to transformers' generate() / inference parameters):
+			//  - max_length: number        -> maximum output token length
+			//  - min_length: number        -> minimum output token length
+			//  - do_sample: boolean        -> use sampling (true) or deterministic (false)
+			//  - num_beams: number         -> beam search width (higher -> more thorough)
+			//  - top_k: number             -> top-k sampling
+			//  - top_p: number             -> nucleus (top-p) sampling
+			//  - temperature: number       -> sampling temperature (1.0 default)
+			//  - repetition_penalty: num  -> penalize repeated tokens
+			//  - no_repeat_ngram_size: num-> prevent repeating n-grams
+			//  - length_penalty: number   -> apply length penalty for beams
+			//  - num_return_sequences: num-> how many sequences to return
+			//  - early_stopping: boolean  -> stop when best beam finishes
+			//
+			// Use whichever combination fits your need. Example (conservative beam search):
+			const output = await captioner("./photo.png", {
+				max_length: 64,
+				min_length: 5,
+				num_beams: 4,
+				num_return_sequences: 2,
+				early_stopping: true,
+				do_sample: false,
+			}) as Array<{ generated_text: string }>;
 
 			const image = await loadImage(processedImage);
-			
+
 			const imagemessage = encoder
 				.align("center")
 				.image(image, targetSize, targetSize, "atkinson")
 				.newline(2);
+
+			imagemessage.text(output[0]?.generated_text || "Image caption unavailable").newline(2);
+			
 			if (DEBUG) {
 				imagemessage.text(ip ? `IP: ${ip}` : "IP: unknown").newline(2);
 
