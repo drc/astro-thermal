@@ -81,14 +81,7 @@ export const server = {
 			//  - early_stopping: boolean  -> stop when best beam finishes
 			//
 			// Use whichever combination fits your need. Example (conservative beam search):
-			const output = await captioner("./photo.png", {
-				max_length: 64,
-				min_length: 5,
-				num_beams: 4,
-				num_return_sequences: 2,
-				early_stopping: true,
-				do_sample: false,
-			}) as Array<{ generated_text: string }>;
+			const output = await captioner("./photo.png") as Array<{ generated_text: string }>;
 
 			const image = await loadImage(processedImage);
 
