@@ -6,12 +6,19 @@ import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
+	security: {
+		checkOrigin: false,
+	},
 	adapter: node({
 		mode: "standalone",
 	}),
 	output: "server",
 	server: {
-		allowedHosts: [".ngrok-free.app", ".trycloudflare.com", "development.dancigrang.dev"],
+		allowedHosts: [
+			".ngrok-free.app",
+			".trycloudflare.com",
+			"development.dancigrang.dev",
+		],
 	},
 	vite: {
 		resolve: {
