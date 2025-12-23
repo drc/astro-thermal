@@ -9,13 +9,15 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
 <main>
     <h1>ReceiptCam</h1>
     {result?.error && <p style="color: red">{result.error}</p>}
-    <form method="post" action={actions.handlePhoto} enctype="multipart/form-data">
+    <form id="photo-form">
         <label for="file_input" class="btn secondary" tabindex="0"> Take or upload a photo </label>
         <input type="file" accept="image/*" name="picture" id="file_input" style="display: none;" />
+
         <input type="hidden" name="ip" value={ip ?? ""} />
         <input type="hidden" name="userAgent" value={userAgent ?? ""} />
+
         <img alt="Placeholder" id="result" />
-        <button type="submit" class="btn primary">Print!</button>
+        <button type="submit" id="submit-btn" class="btn primary">Print!</button>
     </form>
     {
         images?.data && images.data.length > 0 && (
@@ -37,7 +39,6 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
 </main>
 
 <style>
-
     main {
         align-items: center;
         background: rgba(255, 255, 255, 0.9);
@@ -114,6 +115,31 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
 </style>
 
 <script>
+    import { actions } from "astro:actions";
+
+    const form = document.querySelector("#photo-form");
+    const submitBtn = document.querySelector("#submit-btn") as HTMLButtonElement | null;
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Disable button to prevent double uploads
+        if (submitBtn) submitBtn.disabled = true;
+
+        const formData = new FormData(e.currentTarget as HTMLFormElement);
+
+        // Call the action directly
+        const { error } = await actions.handlePhoto(formData);
+
+        if (error) {
+            console.error("Upload failed:", error);
+            alert("Upload failed. Please try again.");
+            if (submitBtn) submitBtn.disabled = false;
+        } else {
+            window.location.reload();
+        }
+    });
+
     const fileDataURL = (file: Blob) =>
         new Promise((resolve, reject) => {
             let fr = new FileReader();
