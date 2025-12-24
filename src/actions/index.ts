@@ -27,6 +27,7 @@ export const server = {
 			if (!picture) {
 				throw new Error("No image provided");
 			}
+			const { name: file_name } = picture;
 			const arrayBuffer = await picture.arrayBuffer();
 			const imageBuffer = Buffer.from(arrayBuffer);
 
@@ -54,12 +55,12 @@ export const server = {
 				.png({ colors: 4 })
 				.toBuffer();
 
-			db.run("INSERT INTO images (data) VALUES (?)", processedImage);
+			db.run("INSERT INTO images (data, file_name, ip_address, user_agent) VALUES (?, ?, ?, ?)", processedImage, file_name, ip, userAgent);
 
 			await sharp(processedImage).toFile("./photo.png");
 
 			const image = await loadImage(processedImage);
-			
+
 			const imagemessage = encoder
 				.align("center")
 				.image(image, targetSize, targetSize, "atkinson")
@@ -71,7 +72,7 @@ export const server = {
 					.text(userAgent ? `User-Agent: ${userAgent}` : "User-Agent: unknown")
 					.newline(2);
 			}
-			client.write(imagemessage.cut().encode());
+			// client.write(imagemessage.cut().encode());
 			return {
 				success: true,
 				message: "Photo processed and sent to printer.",
@@ -81,11 +82,10 @@ export const server = {
 	}),
 	getCurrentPhotos: defineAction({
 		accept: "json",
-		input: z.object({}),
 		handler: async (_input, _context) => {
 			return new Promise<{ id: number; data: Buffer }[]>((resolve, reject) => {
 				db.all(
-					"SELECT id, data FROM images ORDER BY id DESC LIMIT 10",
+					"SELECT id, data FROM images ORDER BY id DESC LIMIT 9;",
 					(err: Error | null, rows: { id: number; data: Buffer }[]) => {
 						if (err) {
 							reject(err);

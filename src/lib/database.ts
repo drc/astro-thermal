@@ -12,10 +12,29 @@ const db = new sqlite3.Database(
 	dbFilePath,
 	sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
 );
+
 db.serialize(() => {
 	db.run(
 		"CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY AUTOINCREMENT, data BLOB NOT NULL)",
 	);
+
+	db.run("ALTER TABLE images ADD COLUMN user_agent TEXT", (err) => {
+		if (err && !err.message.includes("duplicate column")) {
+			console.error("Error adding user_agent column:", err);
+		}
+	});
+
+	db.run("ALTER TABLE images ADD COLUMN ip_address TEXT", (err) => {
+		if (err && !err.message.includes("duplicate column")) {
+			console.error("Error adding ip_address column:", err);
+		}
+	});
+
+	db.run("ALTER TABLE images ADD COLUMN file_name TEXT", (err) => {
+		if (err && !err.message.includes("duplicate column")) {
+			console.error("Error adding file_name column:", err);
+		}
+	});
 });
 
 export default db;

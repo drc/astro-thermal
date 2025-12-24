@@ -2,13 +2,11 @@
 const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
 import { actions } from "astro:actions";
-const result = Astro.getActionResult(actions.handlePhoto);
-const images = await Astro.callAction(actions.getCurrentPhotos, {});
+const images = await Astro.callAction(actions.getCurrentPhotos, null);
 ---
 
 <main>
     <h1>ReceiptCam</h1>
-    {result?.error && <p style="color: red">{result.error}</p>}
     <form id="photo-form">
         <label for="file_input" class="btn secondary" tabindex="0"> Take or upload a photo </label>
         <input type="file" accept="image/*" name="picture" id="file_input" style="display: none;" />
@@ -27,7 +25,7 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
                     {images.data.map((img) => (
                         <img
                             src={`data:image/png;base64,${img.data.toString("base64")}`}
-                            alt={`Uploaded image ${img.id}`}
+                            alt={`user uploaded titled ${img.id}`}
                             height="200"
                             width="auto"
                         />
@@ -116,6 +114,7 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
 
 <script>
     import { actions } from "astro:actions";
+    import { navigate } from "astro:transitions/client";
 
     const form = document.querySelector("#photo-form");
     const submitBtn = document.querySelector("#submit-btn") as HTMLButtonElement | null;
@@ -129,14 +128,16 @@ const images = await Astro.callAction(actions.getCurrentPhotos, {});
         const formData = new FormData(e.currentTarget as HTMLFormElement);
 
         // Call the action directly
-        const { error } = await actions.handlePhoto(formData);
+        const { data, error } = await actions.handlePhoto(formData);
 
         if (error) {
             console.error("Upload failed:", error);
             alert("Upload failed. Please try again.");
             if (submitBtn) submitBtn.disabled = false;
-        } else {
-            window.location.reload();
+        }
+
+        if (data?.success) {
+            navigate("/");
         }
     });
 
