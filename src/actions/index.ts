@@ -72,7 +72,7 @@ export const server = {
 					.text(userAgent ? `User-Agent: ${userAgent}` : "User-Agent: unknown")
 					.newline(2);
 			}
-			// client.write(imagemessage.cut().encode());
+			client.write(imagemessage.cut().encode());
 			return {
 				success: true,
 				message: "Photo processed and sent to printer.",
