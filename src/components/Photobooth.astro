@@ -2,6 +2,7 @@
 const ip = Astro.request.headers.get("x-forwarded-for");
 const userAgent = Astro.request.headers.get("user-agent");
 import { actions } from "astro:actions";
+import PhotoImage from "@/components/PhotoImage.astro";
 const images = await Astro.callAction(actions.getCurrentPhotos, null);
 ---
 
@@ -23,12 +24,7 @@ const images = await Astro.callAction(actions.getCurrentPhotos, null);
                 <h2>Recent Photos</h2>
                 <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
                     {images.data.map((img) => (
-                        <img
-                            src={`data:image/png;base64,${img.data.toString("base64")}`}
-                            alt={`user uploaded titled ${img.id}`}
-                            height="200"
-                            width="auto"
-                        />
+                        <PhotoImage data={img.data} id={`${img.id}`} />
                     ))}
                 </div>
             </>
@@ -141,23 +137,12 @@ const images = await Astro.callAction(actions.getCurrentPhotos, null);
         }
     });
 
-    const fileDataURL = (file: Blob) =>
-        new Promise((resolve, reject) => {
-            let fr = new FileReader();
-            fr.onload = () => resolve(fr.result);
-            fr.onerror = reject;
-            fr.readAsDataURL(file);
-        });
-
     function showResult(file: Blob) {
-        fileDataURL(file)
-            .then((data) => {
-                const resultImg = document.getElementById("result") as HTMLImageElement | null;
-                if (resultImg) {
-                    resultImg.src = data as string;
-                }
-            })
-            .catch((err) => console.log(err));
+        const data = URL.createObjectURL(file);
+        const resultImg = document.getElementById("result") as HTMLImageElement | null;
+        if (resultImg) {
+            resultImg.src = data;
+        }
     }
 
     const fileInput = document.querySelector("#file_input") as HTMLInputElement | null;

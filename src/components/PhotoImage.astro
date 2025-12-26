@@ -1,0 +1,25 @@
+---
+interface Props {
+    data: Buffer;
+    id: string;
+}
+
+const { data, id } = Astro.props;
+---
+
+<img
+    alt={`user uploaded titled ${id}`}
+    height="200"
+    width="auto"
+    data-binary={JSON.stringify(Array.from(new Uint8Array(data)))}
+/>
+
+<script>
+    document.querySelectorAll("img[data-binary]").forEach((img) => {
+        const imgElement = img as HTMLImageElement;
+        const binaryData = JSON.parse(imgElement.getAttribute("data-binary") as string);
+        const blob = new Blob([new Uint8Array(binaryData)], { type: "image/png" });
+        imgElement.src = URL.createObjectURL(blob);
+        imgElement.removeAttribute("data-binary");
+    });
+</script>
