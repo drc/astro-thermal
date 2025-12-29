@@ -1,33 +1,34 @@
 {
-  "name": "astro",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "start": "node dist/server/entry.mjs"
-  },
-  "packageManager": "pnpm@10.21.0",
-  "dependencies": {
-    "@astrojs/node": "^9.5.1",
-    "@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
-    "astro": "^5.16.6",
-    "canvas": "^3.2.0",
-    "playwright": "^1.57.0",
-    "sharp": "^0.34.5",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.19.3",
-    "cloudflared": "^0.7.1",
-    "ngrok": "5.0.0-beta.2",
-    "prettier": "^3.7.4"
-  },
-  "overrides": {
-    "strip-ansi": ">=7.1.2",
-    "wrap-ansi": ">=9.0.2"
-  }
+	"name": "astro",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"start": "node dist/server/entry.mjs",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"packageManager": "pnpm@10.21.0",
+	"dependencies": {
+		"@astrojs/node": "^9.5.1",
+		"@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
+		"astro": "^5.16.6",
+		"canvas": "^3.2.0",
+		"playwright": "^1.57.0",
+		"sharp": "^0.34.5",
+		"sqlite3": "^5.1.7"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.19.3",
+		"cloudflared": "^0.7.1",
+		"vitest": "^1.0.0"
+	},
+	"overrides": {
+		"strip-ansi": ">=7.1.2",
+		"wrap-ansi": ">=9.0.2"
+	}
 }
