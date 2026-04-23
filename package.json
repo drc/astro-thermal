@@ -11,7 +11,7 @@
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
-	"packageManager": "pnpm@10.21.0",
+	"packageManager": "pnpm@10.33.2",
 	"dependencies": {
 		"@astrojs/node": "^9.5.4",
 		"@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
