@@ -13,7 +13,7 @@
 	},
 	"packageManager": "pnpm@10.21.0",
 	"dependencies": {
-		"@astrojs/node": "^9.5.4",
+		"@astrojs/node": "^10.0.5",
 		"@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
 		"astro": "^5.17.3",
 		"canvas": "^3.2.1",
