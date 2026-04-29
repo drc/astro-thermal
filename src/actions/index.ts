@@ -1,12 +1,12 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { createCanvas, loadImage } from "canvas";
 import { client } from "@/lib/printer";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 import sharp from "sharp";
 import db from "@/lib/database";
 
-const DEBUG = process.env.DEBUG || false; // Set to true to enable debug information
+const DEBUG = process.env.DEBUG === "true"; // Set to true to enable debug information
 
 const encoder = new ReceiptPrinterEncoder({
 	// @ts-ignore
