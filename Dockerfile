@@ -1,9 +1,8 @@
-FROM mcr.microsoft.com/playwright:v1.59.1-jammy AS base
+FROM node:22-jammy AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN corepack install -g pnpm@10.33.2
 ENV COREPACK_INTEGRITY_KEYS=0
 
 COPY . /app
