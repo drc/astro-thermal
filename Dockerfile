@@ -5,6 +5,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 ENV COREPACK_INTEGRITY_KEYS=0
 
+# Install build dependencies needed for better-sqlite3 compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	python3 \
+	build-essential \
+	&& rm -rf /var/lib/apt/lists/*
+
 COPY . /app
 WORKDIR /app
 
