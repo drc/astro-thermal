@@ -1,4 +1,4 @@
-FROM node:22-jammy AS base
+FROM node:23-bookworm AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
