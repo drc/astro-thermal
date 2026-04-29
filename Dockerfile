@@ -1,15 +1,10 @@
-FROM node:23-bookworm AS base
+FROM mcr.microsoft.com/playwright:v1.59.1-jammy AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+RUN corepack install -g pnpm@10.33.2
 ENV COREPACK_INTEGRITY_KEYS=0
-
-# Install build dependencies for native modules (sqlite3, canvas, sharp)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-	python3 \
-	build-essential \
-	&& rm -rf /var/lib/apt/lists/*
 
 COPY . /app
 WORKDIR /app
