@@ -1,17 +1,18 @@
-import Database from "better-sqlite3";
+import sqlite3 from "sqlite3";
+import type { Database } from "sqlite3";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const dbDir: string = path.dirname(fileURLToPath(import.meta.url));
 const dbFilePath: string =
 	process.env.IMAGES_DB_PATH ?? path.resolve(dbDir, "images.db");
+const flags: number = sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE;
 
-const db: Database.Database = new Database(dbFilePath);
+const db: Database = new sqlite3.Database(dbFilePath, flags);
 
 function addColumnIfMissing(sql: string): void {
-	try {
-		db.exec(sql);
-	} catch (err) {
+	db.run(sql, (err: Error | null) => {
+		if (!err) return;
 		if (err instanceof Error) {
 			if (!/duplicate column/i.test(err.message)) {
 				console.error("Error adding column:", err);
@@ -19,15 +20,17 @@ function addColumnIfMissing(sql: string): void {
 		} else {
 			console.error("Error adding column:", err);
 		}
-	}
+	});
 }
 
-db.exec(
-	"CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY AUTOINCREMENT, data BLOB NOT NULL)",
-);
+db.serialize(() => {
+	db.run(
+		"CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY AUTOINCREMENT, data BLOB NOT NULL)",
+	);
 
-addColumnIfMissing("ALTER TABLE images ADD COLUMN user_agent TEXT");
-addColumnIfMissing("ALTER TABLE images ADD COLUMN ip_address TEXT");
-addColumnIfMissing("ALTER TABLE images ADD COLUMN file_name TEXT");
+	addColumnIfMissing("ALTER TABLE images ADD COLUMN user_agent TEXT");
+	addColumnIfMissing("ALTER TABLE images ADD COLUMN ip_address TEXT");
+	addColumnIfMissing("ALTER TABLE images ADD COLUMN file_name TEXT");
+});
 
 export default db;
