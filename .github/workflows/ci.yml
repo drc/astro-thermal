@@ -27,9 +27,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: npx oxlint@latest
+      - run: pnpm oxlint
 
-      - run: npx oxfmt@latest --check
+      - run: pnpm oxfmt --check
 
       - run: pnpm build
 
