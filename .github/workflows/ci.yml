@@ -27,7 +27,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm biome check
+      - run: npx oxlint@latest
+
+      - run: npx oxfmt@latest --check
 
       - run: pnpm build
 
