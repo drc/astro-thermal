@@ -9,96 +9,102 @@ import db from "@/lib/database";
 const DEBUG = process.env.DEBUG === "true"; // Set to true to enable debug information
 
 const encoder = new ReceiptPrinterEncoder({
-	// @ts-ignore
-	createCanvas,
-	imageMode: "raster",
-	feedBeforeCut: 8,
+  // @ts-ignore
+  createCanvas,
+  imageMode: "raster",
+  feedBeforeCut: 8,
 });
 
 export const server = {
-	handlePhoto: defineAction({
-		accept: "form",
-		input: z.object({
-			picture: z.instanceof(File),
-			ip: z.string().optional(),
-			userAgent: z.string().optional(),
-		}),
-		handler: async ({ picture, ip, userAgent }, _context) => {
-			if (!picture) {
-				throw new Error("No image provided");
-			}
-			const { name: file_name } = picture;
-			const arrayBuffer = await picture.arrayBuffer();
-			const imageBuffer = Buffer.from(arrayBuffer);
+  handlePhoto: defineAction({
+    accept: "form",
+    input: z.object({
+      picture: z.instanceof(File),
+      ip: z.string().optional(),
+      userAgent: z.string().optional(),
+    }),
+    handler: async ({ picture, ip, userAgent }, _context) => {
+      if (!picture) {
+        throw new Error("No image provided");
+      }
+      const { name: file_name } = picture;
+      const arrayBuffer = await picture.arrayBuffer();
+      const imageBuffer = Buffer.from(arrayBuffer);
 
-			const sharpInstance = sharp(imageBuffer)
-				.rotate() // Apply EXIF orientation
-				.sharpen({ sigma: 2 });
+      const sharpInstance = sharp(imageBuffer)
+        .rotate() // Apply EXIF orientation
+        .sharpen({ sigma: 2 });
 
-			const metadata = await sharpInstance.metadata();
-			// Crop to centered square, max 576x576
-			const maxPrinterWidth = 576;
-			const size = Math.min(
-				metadata.width ?? maxPrinterWidth,
-				metadata.height ?? maxPrinterWidth,
-				maxPrinterWidth,
-			);
-			const targetSize = Math.floor(size / 8) * 8;
-			const processedImage = await sharpInstance
-				.resize({
-					width: targetSize,
-					height: targetSize,
-					fit: "cover",
-					position: "center",
-				})
-				.toColorspace("b-w")
-				.png({ colors: 4 })
-				.toBuffer();
+      const metadata = await sharpInstance.metadata();
+      // Crop to centered square, max 576x576
+      const maxPrinterWidth = 576;
+      const size = Math.min(
+        metadata.width ?? maxPrinterWidth,
+        metadata.height ?? maxPrinterWidth,
+        maxPrinterWidth,
+      );
+      const targetSize = Math.floor(size / 8) * 8;
+      const processedImage = await sharpInstance
+        .resize({
+          width: targetSize,
+          height: targetSize,
+          fit: "cover",
+          position: "center",
+        })
+        .toColorspace("b-w")
+        .png({ colors: 4 })
+        .toBuffer();
 
-			db.run("INSERT INTO images (data, file_name, ip_address, user_agent) VALUES (?, ?, ?, ?)", processedImage, file_name, ip, userAgent);
+      db.run(
+        "INSERT INTO images (data, file_name, ip_address, user_agent) VALUES (?, ?, ?, ?)",
+        processedImage,
+        file_name,
+        ip,
+        userAgent,
+      );
 
-			await sharp(processedImage).toFile("./photo.png");
+      await sharp(processedImage).toFile("./photo.png");
 
-			const image = await loadImage(processedImage);
+      const image = await loadImage(processedImage);
 
-			const imagemessage = encoder
-				.align("center")
-				.image(image, targetSize, targetSize, "atkinson")
-				.newline(2);
-			if (DEBUG) {
-				imagemessage.text(ip ? `IP: ${ip}` : "IP: unknown").newline(2);
+      const imagemessage = encoder
+        .align("center")
+        .image(image, targetSize, targetSize, "atkinson")
+        .newline(2);
+      if (DEBUG) {
+        imagemessage.text(ip ? `IP: ${ip}` : "IP: unknown").newline(2);
 
-				imagemessage
-					.text(userAgent ? `User-Agent: ${userAgent}` : "User-Agent: unknown")
-					.newline(2);
-			}
-			client.write(imagemessage.cut().encode());
-			return {
-				success: true,
-				message: "Photo processed and sent to printer.",
-				debug: DEBUG ? { ip, userAgent, targetSize } : undefined,
-			};
-		},
-	}),
-	getCurrentPhotos: defineAction({
-		accept: "json",
-		handler: async (_input, _context) => {
-			return new Promise<{ id: number; data: Buffer }[]>((resolve, reject) => {
-				db.all(
-					"SELECT id, data FROM images ORDER BY id DESC LIMIT 9;",
-					(err: Error | null, rows: { id: number; data: Buffer }[]) => {
-						if (err) {
-							reject(err);
-						} else {
-							const formattedRows = rows.map((row) => ({
-								id: row.id,
-								data: Buffer.from(row.data),
-							}));
-							resolve(formattedRows);
-						}
-					},
-				);
-			});
-		},
-	}),
+        imagemessage
+          .text(userAgent ? `User-Agent: ${userAgent}` : "User-Agent: unknown")
+          .newline(2);
+      }
+      client.write(imagemessage.cut().encode());
+      return {
+        success: true,
+        message: "Photo processed and sent to printer.",
+        debug: DEBUG ? { ip, userAgent, targetSize } : undefined,
+      };
+    },
+  }),
+  getCurrentPhotos: defineAction({
+    accept: "json",
+    handler: async (_input, _context) => {
+      return new Promise<{ id: number; data: Buffer }[]>((resolve, reject) => {
+        db.all(
+          "SELECT id, data FROM images ORDER BY id DESC LIMIT 9;",
+          (err: Error | null, rows: { id: number; data: Buffer }[]) => {
+            if (err) {
+              reject(err);
+            } else {
+              const formattedRows = rows.map((row) => ({
+                id: row.id,
+                data: Buffer.from(row.data),
+              }));
+              resolve(formattedRows);
+            }
+          },
+        );
+      });
+    },
+  }),
 };
