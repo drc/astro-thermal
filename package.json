@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/node": "^26.1.0",
     "cloudflared": "^0.7.1",
-    "oxfmt": "^0.56.0",
+    "oxfmt": "^0.57.0",
     "oxlint": "^1.72.0",
     "vitest": "^4.1.9"
   },
