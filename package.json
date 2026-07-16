@@ -23,7 +23,7 @@
     "@types/node": "^26.1.1",
     "cloudflared": "^0.7.1",
     "oxfmt": "^0.59.0",
-    "oxlint": "^1.73.0",
+    "oxlint": "^1.74.0",
     "vitest": "^4.1.10"
   },
   "overrides": {
