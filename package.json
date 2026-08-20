@@ -12,7 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.0",
+    "@astrojs/node": "^11.1.2",
     "@point-of-sale/receipt-printer-encoder": "github:cervantes-x/ReceiptPrinterEncoder",
     "astro": "^6.4.8",
     "canvas": "^3.2.3",
