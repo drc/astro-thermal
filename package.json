@@ -24,7 +24,7 @@
     "cloudflared": "^0.7.3",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.79.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "js-yaml": ">=4.2.0",
