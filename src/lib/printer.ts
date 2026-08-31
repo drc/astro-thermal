@@ -54,7 +54,7 @@ for (const event of socketEvents) {
   });
 }
 
-// biome-ignore lint:
+// oxlint-disable-next-line no-shadow-restricted-names
 declare const globalThis: {
   printerClientGlobal: ReturnType<typeof printerClientSingleton>;
   printerConnected: boolean;
