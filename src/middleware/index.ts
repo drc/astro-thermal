@@ -1,7 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
 
-const rateLimit = new Map();
-
 export const onRequest = defineMiddleware((context, next) => {
   // if (!context.url.pathname.includes("/api")) {
   //     return next();

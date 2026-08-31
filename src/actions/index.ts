@@ -55,11 +55,9 @@ export const server = {
         .png({ colors: 4 })
         .toBuffer();
 
-      db
-        .prepare(
-          "INSERT INTO images (data, file_name, ip_address, user_agent) VALUES (?, ?, ?, ?)",
-        )
-        .run(processedImage, file_name, ip, userAgent);
+      db.prepare(
+        "INSERT INTO images (data, file_name, ip_address, user_agent) VALUES (?, ?, ?, ?)",
+      ).run(processedImage, file_name, ip, userAgent);
       await sharp(processedImage).toFile("./photo.png");
 
       const image = await loadImage(processedImage);
@@ -86,9 +84,10 @@ export const server = {
   getCurrentPhotos: defineAction({
     accept: "json",
     handler: async (_input, _context) => {
-      const rows = db
-        .prepare("SELECT id, data FROM images ORDER BY id DESC LIMIT 9")
-        .all() as { id: number; data: Uint8Array }[];
+      const rows = db.prepare("SELECT id, data FROM images ORDER BY id DESC LIMIT 9").all() as {
+        id: number;
+        data: Uint8Array;
+      }[];
       return rows.map((row) => ({
         id: row.id,
         data: Buffer.from(row.data),

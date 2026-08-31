@@ -42,16 +42,12 @@ describe("database module", () => {
     const db = await importDbWithMemory();
     const buf = Buffer.from("hello world");
     const res = db
-      .prepare(
-        "INSERT INTO images (data, user_agent, ip_address, file_name) VALUES (?, ?, ?, ?)",
-      )
+      .prepare("INSERT INTO images (data, user_agent, ip_address, file_name) VALUES (?, ?, ?, ?)")
       .run(buf, "test-agent", "127.0.0.1", "foo.png");
     const lastID = res.lastInsertRowid;
     if (typeof lastID !== "number") throw new Error("insert did not return lastID");
     const row = db
-      .prepare(
-        "SELECT id, data, user_agent, ip_address, file_name FROM images WHERE id = ?",
-      )
+      .prepare("SELECT id, data, user_agent, ip_address, file_name FROM images WHERE id = ?")
       .get(lastID) as ImageRow | undefined;
     expect(row).toBeDefined();
     if (!row) throw new Error("expected row to be present");
