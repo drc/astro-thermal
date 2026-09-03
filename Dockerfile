@@ -30,6 +30,8 @@ COPY --from=build /app/dist ./dist
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD node -e "fetch('http://127.0.0.1:4321/health').then((r) => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1))"
 
 LABEL org.opencontainers.image.source=https://github.com/drc/astro-thermal
 LABEL org.opencontainers.image.description="Astro API to interface with a Rongata receipt printer"
