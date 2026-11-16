@@ -2,8 +2,7 @@ FROM node:lts-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack install -g pnpm@10.33.2
-ENV COREPACK_INTEGRITY_KEYS=0
+RUN npm install -g pnpm@10.33.2
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
