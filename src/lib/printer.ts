@@ -17,9 +17,7 @@ globalThis.printerClientGlobal = client;
 // biome-ignore lint:
 if (!globalThis.printerConnected) {
   if (!HOST) {
-    throw new Error(
-      "[🧾 THERMAL] PRINTER_HOST env var is not set (e.g. PRINTER_HOST=10.0.1.128)",
-    );
+    throw new Error("[🧾 THERMAL] PRINTER_HOST env var is not set (e.g. PRINTER_HOST=10.0.1.128)");
   }
   console.log(`[🧾 THERMAL] Connecting to printer at ${HOST}:${PORT}`);
   client.connect(PORT, HOST, () => {
