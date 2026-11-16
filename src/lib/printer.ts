@@ -1,8 +1,8 @@
 import net from "node:net";
 import ReceiptPrinterEncoder from "@point-of-sale/receipt-printer-encoder";
 
-const PORT: number = 9100;
-const HOST: string = "10.0.1.128";
+const PORT: number = Number(process.env.PRINTER_PORT) || 9100;
+const HOST: string = process.env.PRINTER_HOST ?? "";
 
 const printerClientSingleton = (): net.Socket => {
   console.log("Creating new socket...");
@@ -16,7 +16,12 @@ globalThis.printerClientGlobal = client;
 
 // biome-ignore lint:
 if (!globalThis.printerConnected) {
-  console.log("[🧾 THERMAL] Connecting to printer for the first time");
+  if (!HOST) {
+    throw new Error(
+      "[🧾 THERMAL] PRINTER_HOST env var is not set (e.g. PRINTER_HOST=10.0.1.128)",
+    );
+  }
+  console.log(`[🧾 THERMAL] Connecting to printer at ${HOST}:${PORT}`);
   client.connect(PORT, HOST, () => {
     globalThis.printerConnected = true;
     console.log("[🧾 THERMAL] Connected to printer");
